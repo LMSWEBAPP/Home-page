@@ -19,45 +19,29 @@ export class ParticlesSwarm {
   renderer: THREE.WebGLRenderer;
   dummy: THREE.Object3D;
   color: THREE.Color;
+  target: THREE.Vector3;
   geometry: THREE.TetrahedronGeometry;
   material: THREE.MeshBasicMaterial;
   mesh: THREE.InstancedMesh;
+  positions: THREE.Vector3[];
   clock: THREE.Clock;
   animationFrameId: number | null = null;
   onResizeBound: () => void;
 
-  // Broken open spiral curve
-  curve: THREE.CatmullRomCurve3;
-  LUT_SAMPLES = 1000;
-  lutPos: Float32Array;
-  lutTan: Float32Array;
-
-  // Reusable vectors (zero-allocation per frame)
-  spinePos = new THREE.Vector3();
-  tangent = new THREE.Vector3();
-  up = new THREE.Vector3(0, 1, 0);
-  normal = new THREE.Vector3();
-  binormal = new THREE.Vector3();
-
-  particleU: Float32Array;
-  particleLane: Uint8Array;
-  particleRadiusVar: Float32Array;
-  particleSpeedVar: Float32Array;
-
   constructor(canvas: HTMLCanvasElement, count = 7500) {
     this.count = count;
     this.canvas = canvas;
-    this.speedMult = 0.95;
+    this.speedMult = 0.85;
 
     const width = canvas.clientWidth || canvas.parentElement?.clientWidth || window.innerWidth;
     const height = canvas.clientHeight || canvas.parentElement?.clientHeight || window.innerHeight;
 
-    // SCENE & CAMERA - 100% transparent background
+    // SCENE & CAMERA (No fog to guarantee 100% transparent background)
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 2000);
     this.camera.position.set(0, 0, 110);
 
-    // RENDERER - Pure alpha, zero black box
+    // RENDERER - Pure alpha, completely transparent (no black box overlay)
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
       antialias: true,
@@ -66,44 +50,14 @@ export class ParticlesSwarm {
     });
     this.renderer.setSize(width, height, false);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    this.renderer.setClearColor(0x000000, 0);
+    this.renderer.setClearColor(0x000000, 0); // 100% transparent clear color
 
-    // OPEN 3D SPIRAL CURVE
-    // Originates from the faded edge of Earth, spirals in 3D around the mascot, and exits the viewport
-    this.curve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(36, -28, -10),  // 0: Starts at the faded atmospheric edge of Earth
-      new THREE.Vector3(26, -18, -18),  // 1: Ascends from Earth atmosphere into space
-      new THREE.Vector3(-14, -8, -26),  // 2: Sweeping behind mascot waist
-      new THREE.Vector3(-28, 8, -16),   // 3: Spiraling up the left flank
-      new THREE.Vector3(2, 24, -24),    // 4: Cresting behind mascot head
-      new THREE.Vector3(28, 20, -14),   // 5: Upper S-curve spiral loop
-      new THREE.Vector3(-28, 34, 0),    // 6: Flowing outward across the scene
-      new THREE.Vector3(-95, 48, 18),   // 7: Soaring out of the viewport on the other side!
-    ]);
-    this.curve.curveType = 'catmullrom';
-    this.curve.tension = 0.5;
-
-    // Pre-sample curve into high-precision lookup table for 100% stability and zero allocation
-    this.lutPos = new Float32Array(this.LUT_SAMPLES * 3);
-    this.lutTan = new Float32Array(this.LUT_SAMPLES * 3);
-
-    for (let s = 0; s < this.LUT_SAMPLES; s++) {
-      const uSample = Math.min(0.9999, Math.max(0, s / (this.LUT_SAMPLES - 1)));
-      const p = this.curve.getPointAt(uSample);
-      const t = this.curve.getTangentAt(uSample);
-      this.lutPos[s * 3 + 0] = p.x;
-      this.lutPos[s * 3 + 1] = p.y;
-      this.lutPos[s * 3 + 2] = p.z;
-      this.lutTan[s * 3 + 0] = t.x;
-      this.lutTan[s * 3 + 1] = t.y;
-      this.lutTan[s * 3 + 2] = t.z;
-    }
-
-    // PARTICLES with Additive Blending for celestial luminous bloom
+    // PARTICLES with Additive Blending for brilliant radiant glow without black box
     this.dummy = new THREE.Object3D();
     this.color = new THREE.Color();
+    this.target = new THREE.Vector3();
 
-    this.geometry = new THREE.TetrahedronGeometry(0.34);
+    this.geometry = new THREE.TetrahedronGeometry(0.32);
     this.material = new THREE.MeshBasicMaterial({
       color: 0xffffff,
       transparent: true,
@@ -115,17 +69,15 @@ export class ParticlesSwarm {
     this.mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     this.scene.add(this.mesh);
 
-    // Particle distribution along the curve
-    this.particleU = new Float32Array(this.count);
-    this.particleLane = new Uint8Array(this.count);
-    this.particleRadiusVar = new Float32Array(this.count);
-    this.particleSpeedVar = new Float32Array(this.count);
-
+    this.positions = [];
     for (let i = 0; i < this.count; i++) {
-      this.particleU[i] = (i / this.count) + (Math.random() - 0.5) * (1 / this.count);
-      this.particleLane[i] = i % 8;
-      this.particleRadiusVar[i] = 0.75 + Math.random() * 0.5;
-      this.particleSpeedVar[i] = 0.88 + Math.random() * 0.24;
+      this.positions.push(
+        new THREE.Vector3(
+          (Math.random() - 0.5) * 100,
+          (Math.random() - 0.5) * 100,
+          (Math.random() - 0.5) * 100
+        )
+      );
       this.mesh.setColorAt(i, this.color.setHex(0x38bdf8));
     }
 
@@ -135,25 +87,6 @@ export class ParticlesSwarm {
     window.addEventListener('resize', this.onResizeBound);
 
     this.animate();
-  }
-
-  sampleCurve(u: number) {
-    const clampedU = Math.max(0, Math.min(0.99999, u));
-    const f = clampedU * (this.LUT_SAMPLES - 1);
-    const idx = Math.floor(f);
-    const frac = f - idx;
-    const idx2 = Math.min(this.LUT_SAMPLES - 1, idx + 1);
-
-    const i1 = idx * 3;
-    const i2 = idx2 * 3;
-
-    this.spinePos.x = this.lutPos[i1 + 0] + (this.lutPos[i2 + 0] - this.lutPos[i1 + 0]) * frac;
-    this.spinePos.y = this.lutPos[i1 + 1] + (this.lutPos[i2 + 1] - this.lutPos[i1 + 1]) * frac;
-    this.spinePos.z = this.lutPos[i1 + 2] + (this.lutPos[i2 + 2] - this.lutPos[i1 + 2]) * frac;
-
-    this.tangent.x = this.lutTan[i1 + 0] + (this.lutTan[i2 + 0] - this.lutTan[i1 + 0]) * frac;
-    this.tangent.y = this.lutTan[i1 + 1] + (this.lutTan[i2 + 1] - this.lutTan[i1 + 1]) * frac;
-    this.tangent.z = this.lutTan[i1 + 2] + (this.lutTan[i2 + 2] - this.lutTan[i1 + 2]) * frac;
   }
 
   onResize() {
@@ -168,82 +101,113 @@ export class ParticlesSwarm {
 
   animate() {
     this.animationFrameId = requestAnimationFrame(this.animate);
-    const delta = Math.min(this.clock.getDelta(), 0.05);
-    const time = this.clock.getElapsedTime();
-    const baseFlowSpeed = 0.085 * this.speedMult;
+    const time = this.clock.getElapsedTime() * this.speedMult;
+
+    const s = 50;
+    const v = 0.8;
+    const h = 1.0;
+    const r = 0.8;
+    const d = 1.0;
+
+    const n = Math.max(1, this.count);
+    const tau = 6.283185307179586;
+    const rows = Math.max(1, Math.ceil(n / 10));
+    const t = time * v;
+    const dt = time * (0.8 + d);
+    const tube = s * (0.05 + 0.02 * h);
+    const dr = s * (0.18 + 0.03 * r);
 
     for (let i = 0; i < this.count; i++) {
-      // Advance particle along the open curve
-      let u = this.particleU[i] + delta * baseFlowSpeed * this.particleSpeedVar[i];
-      if (u >= 1.0) u -= 1.0;
-      if (u < 0) u = 0;
-      this.particleU[i] = u;
+      const target = this.target;
+      const color = this.color;
 
-      // Sample precomputed curve LUT - 100% crash-proof & zero garbage allocation
-      this.sampleCurve(u);
+      const lane = i % 10;
+      const row = (i - lane) / 10;
 
-      // Compute orthonormal perpendicular frame
-      if (Math.abs(this.tangent.y) > 0.92) {
-        this.normal.set(1, 0, 0).cross(this.tangent).normalize();
-      } else {
-        this.normal.crossVectors(this.tangent, this.up).normalize();
-      }
-      this.binormal.crossVectors(this.tangent, this.normal).normalize();
+      const dataMask = Math.min(1, Math.floor(lane / 8));
+      const energyMask = 1.0 - dataMask;
 
-      // Smooth taper: emerge from Earth's fade at u=0, exit viewport smoothly at u=1
-      let taper = 1.0;
-      if (u < 0.12) {
-        taper = u / 0.12; // Fade in from Earth atmosphere
-      } else if (u > 0.84) {
-        taper = Math.max(0, (1.0 - u) / 0.16); // Fade out as it exits the viewport
-      }
+      const u0 = (row + 0.5) / rows + t * 0.04;
+      const u = u0 - Math.floor(u0);
+      const a = u * tau;
 
-      // Spiral twist along the stream + rotation over time
-      const lane = this.particleLane[i];
-      const strandAngle = lane * (Math.PI * 2 / 8);
-      const spiralTheta = strandAngle + u * Math.PI * 14.0 + time * 1.6;
+      const ca = Math.cos(a);
+      const sa = Math.sin(a);
+      const c2 = Math.cos(a * 2.0);
+      const s2 = Math.sin(a * 2.0);
 
-      const baseR = 3.6 * this.particleRadiusVar[i];
-      const wave = Math.sin(u * 12.0 + lane + time * 2.0) * 0.4;
-      const r = (baseR + wave) * Math.max(0.04, taper);
+      const top = 0.5 * (sa + Math.abs(sa));
+      const bottom = 0.5 * (-sa + Math.abs(sa));
 
-      const px = this.spinePos.x + (this.normal.x * Math.cos(spiralTheta) + this.binormal.x * Math.sin(spiralTheta)) * r;
-      const py = this.spinePos.y + (this.normal.y * Math.cos(spiralTheta) + this.binormal.y * Math.sin(spiralTheta)) * r;
-      const pz = this.spinePos.z + (this.normal.z * Math.cos(spiralTheta) + this.binormal.z * Math.sin(spiralTheta)) * r;
+      const cx = s * (1.15 * ca + 0.08 * c2);
+      const cy = s * (0.42 * top - 0.28 * bottom + 0.03 * s2);
+      const cz = s * 0.72 * sa;
 
-      this.dummy.position.set(px, py, pz);
+      const lu = (lane + 0.5) / 10.0;
 
-      // Scale particle based on taper
-      const scale = 0.32 * Math.max(0.01, taper);
-      this.dummy.scale.set(scale, scale, scale);
+      const spin = lu * tau * 2.0 + a * (1.4 + r * 0.5) - t * (1.2 + h * 0.15);
+
+      const cs = Math.cos(spin);
+      const ss = Math.sin(spin);
+
+      const wave = s * 0.012 * Math.sin(a * 6.0 - t * 2.0 + spin);
+
+      const ex = cx + ca * tube * cs - sa * tube * 0.3 * ss;
+      const ey = cy + tube * ss + wave;
+      const ez = cz + sa * tube * cs + ca * tube * 0.3 * ss;
+
+      const ds = lu * tau * 3.0 + a * (3.0 + d) - dt * 1.5;
+
+      const dc = Math.cos(ds);
+      const dn = Math.sin(ds);
+
+      const dx = cx + ca * dr + ca * tube * 0.5 * dc;
+      const dy = cy + s * 0.16 + dr * 0.35 * dn;
+      const dz = cz + sa * dr + sa * tube * 0.5 * dc;
+
+      const x = ex * energyMask + dx * dataMask;
+      const y = ey * energyMask + dy * dataMask;
+      const z = ez * energyMask + dz * dataMask;
+
+      // Vertical spiral: Orient the loop vertically along the Y-axis to frame the mascot
+      const vertX = -y * 1.35 + 4.5;
+      const vertY = x;
+      const vertZ = z;
+
+      target.set(vertX, vertY, vertZ);
+
+      const pulse = 0.5 + 0.5 * Math.sin(a * 3.0 - t * 1.8);
+
+      const heatZone = 0.5 - 0.5 * ca;
+      const powerZone = 0.5 + 0.5 * sa;
+
+      // Vedika signature palette: Electric Cyan + Amethyst Purple / Violet + Golden Sparkles
+      const energyHue = 0.73 + 0.08 * heatZone + 0.04 * powerZone; // Violet & Purple
+      const dataHue = 0.54 + 0.04 * (0.5 + 0.5 * dn); // Electric Sky / Cyan
+
+      const hue = energyHue * energyMask + dataHue * dataMask;
+      const sat = energyMask * (0.85 + 0.15 * pulse) + dataMask * 0.95;
+      const light = energyMask * (0.42 + 0.28 * pulse) + dataMask * (0.55 + 0.2 * (0.5 + 0.5 * dn));
+
+      color.setHSL(
+        Math.max(0, Math.min(1, hue % 1)),
+        Math.max(0, Math.min(1, sat)),
+        Math.max(0, Math.min(1, light))
+      );
+
+      // UPDATE
+      this.positions[i].lerp(this.target, 0.1);
+      this.dummy.position.copy(this.positions[i]);
       this.dummy.updateMatrix();
       this.mesh.setMatrixAt(i, this.dummy.matrix);
-
-      // Color: Electric Cyan / Sky Blue and Royal Amethyst / Magenta with luminance scaling
-      const isDataLane = lane % 2 === 0;
-      let hue: number;
-      let sat: number;
-      let light: number;
-
-      if (isDataLane) {
-        hue = 0.54 + 0.04 * Math.sin(u * 6.0); // Electric Cyan to Sky Blue
-        sat = 0.95;
-        light = 0.58 * taper;
-      } else {
-        hue = 0.75 + 0.06 * Math.cos(u * 5.0); // Amethyst Purple to Magenta
-        sat = 0.92;
-        light = 0.50 * taper;
-      }
-
-      this.color.setHSL(hue, sat, Math.max(0, Math.min(1, light)));
       this.mesh.setColorAt(i, this.color);
     }
-
     this.mesh.instanceMatrix.needsUpdate = true;
     if (this.mesh.instanceColor) {
       this.mesh.instanceColor.needsUpdate = true;
     }
 
+    // Direct render with alpha: true - 100% transparent where no particles exist
     this.renderer.render(this.scene, this.camera);
   }
 
@@ -262,7 +226,7 @@ export class ParticlesSwarm {
 
 export default function ParticlesBackground({
   count = 7500,
-  opacity = 0.9,
+  opacity = 0.85,
   className,
   style,
 }: ParticlesBackgroundProps) {
