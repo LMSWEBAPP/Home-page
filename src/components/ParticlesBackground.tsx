@@ -28,6 +28,17 @@ export class ParticlesSwarm {
 
   // Broken open spiral curve
   curve: THREE.CatmullRomCurve3;
+  LUT_SAMPLES = 1000;
+  lutPos: Float32Array;
+  lutTan: Float32Array;
+
+  // Reusable vectors (zero-allocation per frame)
+  spinePos = new THREE.Vector3();
+  tangent = new THREE.Vector3();
+  up = new THREE.Vector3(0, 1, 0);
+  normal = new THREE.Vector3();
+  binormal = new THREE.Vector3();
+
   particleU: Float32Array;
   particleLane: Uint8Array;
   particleRadiusVar: Float32Array;
@@ -72,6 +83,22 @@ export class ParticlesSwarm {
     this.curve.curveType = 'catmullrom';
     this.curve.tension = 0.5;
 
+    // Pre-sample curve into high-precision lookup table for 100% stability and zero allocation
+    this.lutPos = new Float32Array(this.LUT_SAMPLES * 3);
+    this.lutTan = new Float32Array(this.LUT_SAMPLES * 3);
+
+    for (let s = 0; s < this.LUT_SAMPLES; s++) {
+      const uSample = Math.min(0.9999, Math.max(0, s / (this.LUT_SAMPLES - 1)));
+      const p = this.curve.getPointAt(uSample);
+      const t = this.curve.getTangentAt(uSample);
+      this.lutPos[s * 3 + 0] = p.x;
+      this.lutPos[s * 3 + 1] = p.y;
+      this.lutPos[s * 3 + 2] = p.z;
+      this.lutTan[s * 3 + 0] = t.x;
+      this.lutTan[s * 3 + 1] = t.y;
+      this.lutTan[s * 3 + 2] = t.z;
+    }
+
     // PARTICLES with Additive Blending for celestial luminous bloom
     this.dummy = new THREE.Object3D();
     this.color = new THREE.Color();
@@ -110,6 +137,25 @@ export class ParticlesSwarm {
     this.animate();
   }
 
+  sampleCurve(u: number) {
+    const clampedU = Math.max(0, Math.min(0.99999, u));
+    const f = clampedU * (this.LUT_SAMPLES - 1);
+    const idx = Math.floor(f);
+    const frac = f - idx;
+    const idx2 = Math.min(this.LUT_SAMPLES - 1, idx + 1);
+
+    const i1 = idx * 3;
+    const i2 = idx2 * 3;
+
+    this.spinePos.x = this.lutPos[i1 + 0] + (this.lutPos[i2 + 0] - this.lutPos[i1 + 0]) * frac;
+    this.spinePos.y = this.lutPos[i1 + 1] + (this.lutPos[i2 + 1] - this.lutPos[i1 + 1]) * frac;
+    this.spinePos.z = this.lutPos[i1 + 2] + (this.lutPos[i2 + 2] - this.lutPos[i1 + 2]) * frac;
+
+    this.tangent.x = this.lutTan[i1 + 0] + (this.lutTan[i2 + 0] - this.lutTan[i1 + 0]) * frac;
+    this.tangent.y = this.lutTan[i1 + 1] + (this.lutTan[i2 + 1] - this.lutTan[i1 + 1]) * frac;
+    this.tangent.z = this.lutTan[i1 + 2] + (this.lutTan[i2 + 2] - this.lutTan[i1 + 2]) * frac;
+  }
+
   onResize() {
     if (!this.canvas) return;
     const width = this.canvas.clientWidth || this.canvas.parentElement?.clientWidth || window.innerWidth;
@@ -126,27 +172,23 @@ export class ParticlesSwarm {
     const time = this.clock.getElapsedTime();
     const baseFlowSpeed = 0.085 * this.speedMult;
 
-    const up = new THREE.Vector3(0, 1, 0);
-    const normal = new THREE.Vector3();
-    const binormal = new THREE.Vector3();
-
     for (let i = 0; i < this.count; i++) {
       // Advance particle along the open curve
       let u = this.particleU[i] + delta * baseFlowSpeed * this.particleSpeedVar[i];
       if (u >= 1.0) u -= 1.0;
+      if (u < 0) u = 0;
       this.particleU[i] = u;
 
-      // Sample curve position and forward tangent
-      const spinePos = this.curve.getPointAt(u);
-      const tangent = this.curve.getTangentAt(u);
+      // Sample precomputed curve LUT - 100% crash-proof & zero garbage allocation
+      this.sampleCurve(u);
 
       // Compute orthonormal perpendicular frame
-      if (Math.abs(tangent.y) > 0.92) {
-        normal.set(1, 0, 0).cross(tangent).normalize();
+      if (Math.abs(this.tangent.y) > 0.92) {
+        this.normal.set(1, 0, 0).cross(this.tangent).normalize();
       } else {
-        normal.crossVectors(tangent, up).normalize();
+        this.normal.crossVectors(this.tangent, this.up).normalize();
       }
-      binormal.crossVectors(tangent, normal).normalize();
+      this.binormal.crossVectors(this.tangent, this.normal).normalize();
 
       // Smooth taper: emerge from Earth's fade at u=0, exit viewport smoothly at u=1
       let taper = 1.0;
@@ -165,9 +207,9 @@ export class ParticlesSwarm {
       const wave = Math.sin(u * 12.0 + lane + time * 2.0) * 0.4;
       const r = (baseR + wave) * Math.max(0.04, taper);
 
-      const px = spinePos.x + (normal.x * Math.cos(spiralTheta) + binormal.x * Math.sin(spiralTheta)) * r;
-      const py = spinePos.y + (normal.y * Math.cos(spiralTheta) + binormal.y * Math.sin(spiralTheta)) * r;
-      const pz = spinePos.z + (normal.z * Math.cos(spiralTheta) + binormal.z * Math.sin(spiralTheta)) * r;
+      const px = this.spinePos.x + (this.normal.x * Math.cos(spiralTheta) + this.binormal.x * Math.sin(spiralTheta)) * r;
+      const py = this.spinePos.y + (this.normal.y * Math.cos(spiralTheta) + this.binormal.y * Math.sin(spiralTheta)) * r;
+      const pz = this.spinePos.z + (this.normal.z * Math.cos(spiralTheta) + this.binormal.z * Math.sin(spiralTheta)) * r;
 
       this.dummy.position.set(px, py, pz);
 
