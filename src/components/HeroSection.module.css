@@ -148,7 +148,7 @@
   background: transparent;
   box-shadow: none;
   border: none;
-  perspective: 1200px;
+  perspective: 850px;
   perspective-origin: 50% 50%;
   transform-style: preserve-3d;
 }
@@ -311,10 +311,9 @@
   align-items: flex-start;
   justify-content: center;
   gap: 0.45rem;
-  padding: 0.8rem 1rem;
-  backdrop-filter: blur(24px) saturate(190%);
-  -webkit-backdrop-filter: blur(24px) saturate(190%);
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  padding: 0.85rem 1.05rem;
+  backdrop-filter: blur(28px) saturate(200%);
+  -webkit-backdrop-filter: blur(28px) saturate(200%);
   cursor: pointer;
   pointer-events: auto;
   z-index: 10;
@@ -327,9 +326,47 @@
   overflow: hidden;
 }
 
+/* Convex Cylindrical Lens Bulge */
+.glassCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    ellipse 130% 90% at 28% 40%,
+    rgba(255, 255, 255, 0.26) 0%,
+    rgba(255, 255, 255, 0.08) 35%,
+    rgba(2, 6, 20, 0.45) 80%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Curved Specular Reflection Band (Cylindrical Glass Gleam) */
+.glassCard::after {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: 22%;
+  width: 22px;
+  height: 140%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.45) 50%,
+    transparent 100%
+  );
+  transform: skewX(-14deg);
+  filter: blur(1.5px);
+  pointer-events: none;
+  opacity: 0.85;
+  z-index: 2;
+}
+
 .activeCard {
   border-color: rgba(56, 189, 248, 0.85) !important;
-  box-shadow: 0 0 40px rgba(56, 189, 248, 0.55), inset 0 1px 2px rgba(255, 255, 255, 0.65) !important;
+  box-shadow: 0 0 45px rgba(56, 189, 248, 0.6), inset 0 1px 3px rgba(255, 255, 255, 0.75) !important;
 }
 
 .cardShine {
@@ -338,8 +375,9 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.12) 0%, transparent 60%);
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
   pointer-events: none;
+  z-index: 1;
 }
 
 .cardIconBox {
@@ -350,16 +388,22 @@
   height: 38px;
   border-radius: 10px;
   transition: transform 0.25s ease;
+  position: relative;
+  z-index: 3;
+  transform: translateZ(10px);
 }
 
 .glassCard:hover .cardIconBox {
-  transform: scale(1.12);
+  transform: scale(1.12) translateZ(15px);
 }
 
 .cardTextCol {
   display: flex;
   flex-direction: column;
   line-height: 1.2;
+  position: relative;
+  z-index: 3;
+  transform: translateZ(8px);
 }
 
 .cardWord {
@@ -368,6 +412,7 @@
   font-weight: 700;
   color: #ffffff;
   letter-spacing: -0.01em;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
 }
 
 /* Icon Glows */
@@ -407,140 +452,194 @@
 
 /* 4 Glass Cards Exact Positions - Curved Inward in 3D Space */
 
-/* 1. Learn Concepts (Top-Left) - Curved inward towards character */
+/* 1. Learn Concepts (Top-Left) - Curved Inward */
 .cardLearnConcepts {
   top: 6%;
   left: 2%;
-  min-width: 126px;
-  max-width: 140px;
-  background: linear-gradient(118deg, rgba(255, 255, 255, 0.15) 0%, rgba(13, 22, 48, 0.58) 45%, rgba(9, 15, 34, 0.72) 100%);
-  border-radius: 16px 20px 20px 16px;
-  box-shadow: -6px 14px 35px -8px rgba(0, 0, 0, 0.75),
-              inset 1.5px 1px 2px rgba(255, 255, 255, 0.45),
-              inset -1px -1px 3px rgba(56, 189, 248, 0.2),
-              0 0 25px -5px rgba(56, 189, 248, 0.22);
-  transform: rotateY(18deg) rotateX(4deg) translateZ(16px);
+  min-width: 128px;
+  max-width: 142px;
+  border-radius: 26px 14px 14px 26px / 34px 18px 18px 34px;
+  background: linear-gradient(
+    108deg,
+    rgba(255, 255, 255, 0.24) 0%,
+    rgba(16, 26, 56, 0.65) 32%,
+    rgba(8, 14, 34, 0.78) 75%,
+    rgba(4, 8, 22, 0.88) 100%
+  );
+  border-left: 2.2px solid rgba(255, 255, 255, 0.65);
+  border-top: 1.5px solid rgba(255, 255, 255, 0.45);
+  border-bottom: 1.2px solid rgba(255, 255, 255, 0.2);
+  border-right: 1px solid rgba(56, 189, 248, 0.25);
+  box-shadow: -10px 18px 42px -6px rgba(0, 0, 0, 0.85),
+              inset 4px 0 10px rgba(255, 255, 255, 0.4),
+              inset -5px 0 14px rgba(0, 0, 0, 0.65),
+              inset 0 2px 4px rgba(255, 255, 255, 0.45),
+              inset 0 -2px 4px rgba(0, 0, 0, 0.5),
+              0 0 25px -4px rgba(56, 189, 248, 0.3);
+  transform: perspective(650px) rotateY(26deg) rotateX(6deg) translateZ(28px);
   animation: floatCard1Curved 6s ease-in-out infinite;
 }
 
 .cardLearnConcepts:hover {
-  transform: rotateY(8deg) rotateX(2deg) translateZ(52px) translateY(-5px) scale(1.06) !important;
-  background: rgba(18, 28, 62, 0.8);
-  border-color: rgba(56, 189, 248, 0.65);
-  box-shadow: -8px 22px 48px -6px rgba(0, 0, 0, 0.85),
-              inset 1.5px 1px 2px rgba(255, 255, 255, 0.6),
-              0 0 35px rgba(56, 189, 248, 0.45);
+  transform: perspective(650px) rotateY(12deg) rotateX(3deg) translateZ(64px) translateY(-5px) scale(1.07) !important;
+  background: rgba(20, 32, 70, 0.85);
+  border-color: rgba(56, 189, 248, 0.75);
+  box-shadow: -12px 24px 52px -6px rgba(0, 0, 0, 0.9),
+              inset 4px 0 12px rgba(255, 255, 255, 0.65),
+              0 0 40px rgba(56, 189, 248, 0.5);
 }
 
-/* 2. Practice & Solve (Mid-Left) - Deepest 3D curve in the center orbit */
+/* 2. Practice & Solve (Mid-Left) - Maximum 3D Cylindrical Curvature */
 .cardPracticeSolve {
   top: 36%;
   left: 1%;
-  min-width: 128px;
-  max-width: 142px;
-  background: linear-gradient(118deg, rgba(255, 255, 255, 0.15) 0%, rgba(13, 22, 48, 0.58) 45%, rgba(9, 15, 34, 0.72) 100%);
-  border-radius: 16px 20px 20px 16px;
-  box-shadow: -7px 16px 38px -8px rgba(0, 0, 0, 0.78),
-              inset 1.5px 1px 2px rgba(255, 255, 255, 0.45),
-              inset -1px -1px 3px rgba(6, 182, 212, 0.2),
-              0 0 25px -5px rgba(6, 182, 212, 0.25);
-  transform: rotateY(22deg) rotateX(0deg) translateZ(28px);
+  min-width: 130px;
+  max-width: 144px;
+  border-radius: 28px 14px 14px 28px / 36px 18px 18px 36px;
+  background: linear-gradient(
+    108deg,
+    rgba(255, 255, 255, 0.24) 0%,
+    rgba(16, 26, 56, 0.65) 32%,
+    rgba(8, 14, 34, 0.78) 75%,
+    rgba(4, 8, 22, 0.88) 100%
+  );
+  border-left: 2.2px solid rgba(255, 255, 255, 0.65);
+  border-top: 1.5px solid rgba(255, 255, 255, 0.45);
+  border-bottom: 1.2px solid rgba(255, 255, 255, 0.2);
+  border-right: 1px solid rgba(6, 182, 212, 0.25);
+  box-shadow: -12px 20px 45px -6px rgba(0, 0, 0, 0.88),
+              inset 4px 0 10px rgba(255, 255, 255, 0.4),
+              inset -5px 0 14px rgba(0, 0, 0, 0.65),
+              inset 0 2px 4px rgba(255, 255, 255, 0.45),
+              inset 0 -2px 4px rgba(0, 0, 0, 0.5),
+              0 0 28px -4px rgba(6, 182, 212, 0.32);
+  transform: perspective(650px) rotateY(30deg) rotateX(0deg) translateZ(40px);
   animation: floatCard2Curved 6.8s ease-in-out infinite 0.8s;
 }
 
 .cardPracticeSolve:hover {
-  transform: rotateY(10deg) rotateX(0deg) translateZ(58px) translateY(-5px) scale(1.06) !important;
-  background: rgba(18, 28, 62, 0.8);
-  border-color: rgba(6, 182, 212, 0.65);
-  box-shadow: -8px 22px 48px -6px rgba(0, 0, 0, 0.85),
-              inset 1.5px 1px 2px rgba(255, 255, 255, 0.6),
-              0 0 35px rgba(6, 182, 212, 0.45);
+  transform: perspective(650px) rotateY(14deg) rotateX(0deg) translateZ(72px) translateY(-5px) scale(1.07) !important;
+  background: rgba(20, 32, 70, 0.85);
+  border-color: rgba(6, 182, 212, 0.75);
+  box-shadow: -12px 24px 52px -6px rgba(0, 0, 0, 0.9),
+              inset 4px 0 12px rgba(255, 255, 255, 0.65),
+              0 0 40px rgba(6, 182, 212, 0.5);
 }
 
-/* 3. Achieve Your Goals (Bottom-Left) - Tilted along bottom curve */
+/* 3. Achieve Your Goals (Bottom-Left) - Spherical Lower Curve */
 .cardAchieveGoals {
   top: 66%;
   left: 2%;
-  min-width: 130px;
-  max-width: 144px;
-  background: linear-gradient(118deg, rgba(255, 255, 255, 0.15) 0%, rgba(13, 22, 48, 0.58) 45%, rgba(9, 15, 34, 0.72) 100%);
-  border-radius: 16px 20px 20px 16px;
-  box-shadow: -6px 14px 35px -8px rgba(0, 0, 0, 0.75),
-              inset 1.5px 1px 2px rgba(255, 255, 255, 0.45),
-              inset -1px -1px 3px rgba(192, 132, 252, 0.2),
-              0 0 25px -5px rgba(192, 132, 252, 0.25);
-  transform: rotateY(18deg) rotateX(-5deg) translateZ(18px);
+  min-width: 132px;
+  max-width: 146px;
+  border-radius: 26px 14px 14px 26px / 34px 18px 18px 34px;
+  background: linear-gradient(
+    108deg,
+    rgba(255, 255, 255, 0.24) 0%,
+    rgba(16, 26, 56, 0.65) 32%,
+    rgba(8, 14, 34, 0.78) 75%,
+    rgba(4, 8, 22, 0.88) 100%
+  );
+  border-left: 2.2px solid rgba(255, 255, 255, 0.65);
+  border-top: 1.5px solid rgba(255, 255, 255, 0.45);
+  border-bottom: 1.2px solid rgba(255, 255, 255, 0.2);
+  border-right: 1px solid rgba(192, 132, 252, 0.25);
+  box-shadow: -10px 18px 42px -6px rgba(0, 0, 0, 0.85),
+              inset 4px 0 10px rgba(255, 255, 255, 0.4),
+              inset -5px 0 14px rgba(0, 0, 0, 0.65),
+              inset 0 2px 4px rgba(255, 255, 255, 0.45),
+              inset 0 -2px 4px rgba(0, 0, 0, 0.5),
+              0 0 25px -4px rgba(192, 132, 252, 0.3);
+  transform: perspective(650px) rotateY(26deg) rotateX(-7deg) translateZ(28px);
   animation: floatCard3Curved 7.5s ease-in-out infinite 1.4s;
 }
 
 .cardAchieveGoals:hover {
-  transform: rotateY(8deg) rotateX(-2deg) translateZ(52px) translateY(-5px) scale(1.06) !important;
-  background: rgba(18, 28, 62, 0.8);
-  border-color: rgba(192, 132, 252, 0.65);
-  box-shadow: -8px 22px 48px -6px rgba(0, 0, 0, 0.85),
-              inset 1.5px 1px 2px rgba(255, 255, 255, 0.6),
-              0 0 35px rgba(192, 132, 252, 0.45);
+  transform: perspective(650px) rotateY(12deg) rotateX(-3deg) translateZ(64px) translateY(-5px) scale(1.07) !important;
+  background: rgba(20, 32, 70, 0.85);
+  border-color: rgba(192, 132, 252, 0.75);
+  box-shadow: -12px 24px 52px -6px rgba(0, 0, 0, 0.9),
+              inset 4px 0 12px rgba(255, 255, 255, 0.65),
+              0 0 40px rgba(192, 132, 252, 0.5);
 }
 
-/* 4. Track Progress (Mid-Right) - Curved inwards from the right */
+/* 4. Track Progress (Mid-Right) - Curved Inward from Right */
 .cardTrackProgress {
   top: 38%;
   right: 1.5%;
-  min-width: 126px;
-  max-width: 140px;
-  background: linear-gradient(242deg, rgba(255, 255, 255, 0.15) 0%, rgba(13, 22, 48, 0.58) 45%, rgba(9, 15, 34, 0.72) 100%);
-  border-radius: 20px 16px 16px 20px;
-  box-shadow: 7px 16px 38px -8px rgba(0, 0, 0, 0.78),
-              inset -1.5px 1px 2px rgba(255, 255, 255, 0.45),
-              inset 1px -1px 3px rgba(129, 140, 248, 0.2),
-              0 0 25px -5px rgba(129, 140, 248, 0.25);
-  transform: rotateY(-22deg) rotateX(1deg) translateZ(26px);
+  min-width: 128px;
+  max-width: 142px;
+  border-radius: 14px 28px 28px 14px / 18px 36px 36px 18px;
+  background: linear-gradient(
+    252deg,
+    rgba(255, 255, 255, 0.24) 0%,
+    rgba(16, 26, 56, 0.65) 32%,
+    rgba(8, 14, 34, 0.78) 75%,
+    rgba(4, 8, 22, 0.88) 100%
+  );
+  border-right: 2.2px solid rgba(255, 255, 255, 0.65);
+  border-top: 1.5px solid rgba(255, 255, 255, 0.45);
+  border-bottom: 1.2px solid rgba(255, 255, 255, 0.2);
+  border-left: 1px solid rgba(129, 140, 248, 0.25);
+  box-shadow: 12px 20px 45px -6px rgba(0, 0, 0, 0.88),
+              inset -4px 0 10px rgba(255, 255, 255, 0.4),
+              inset 5px 0 14px rgba(0, 0, 0, 0.65),
+              inset 0 2px 4px rgba(255, 255, 255, 0.45),
+              inset 0 -2px 4px rgba(0, 0, 0, 0.5),
+              0 0 28px -4px rgba(129, 140, 248, 0.32);
+  transform: perspective(650px) rotateY(-30deg) rotateX(2deg) translateZ(38px);
   animation: floatCard4Curved 6.2s ease-in-out infinite 0.4s;
 }
 
-.cardTrackProgress:hover {
-  transform: rotateY(-10deg) rotateX(0deg) translateZ(56px) translateY(-5px) scale(1.06) !important;
-  background: rgba(18, 28, 62, 0.8);
-  border-color: rgba(129, 140, 248, 0.65);
-  box-shadow: 8px 22px 48px -6px rgba(0, 0, 0, 0.85),
-              inset -1.5px 1px 2px rgba(255, 255, 255, 0.6),
-              0 0 35px rgba(129, 140, 248, 0.45);
+.cardTrackProgress::after {
+  left: auto;
+  right: 22%;
+  transform: skewX(14deg);
 }
 
-/* 3D Floating Animations maintaining the subtle space curvature */
+.cardTrackProgress:hover {
+  transform: perspective(650px) rotateY(-14deg) rotateX(0deg) translateZ(72px) translateY(-5px) scale(1.07) !important;
+  background: rgba(20, 32, 70, 0.85);
+  border-color: rgba(129, 140, 248, 0.75);
+  box-shadow: 12px 24px 52px -6px rgba(0, 0, 0, 0.9),
+              inset -4px 0 12px rgba(255, 255, 255, 0.65),
+              0 0 40px rgba(129, 140, 248, 0.5);
+}
+
+/* 3D Floating Animations with curved spatial arcs */
 @keyframes floatCard1Curved {
   0%, 100% {
-    transform: rotateY(18deg) rotateX(4deg) translateZ(16px) translateY(0px);
+    transform: perspective(650px) rotateY(26deg) rotateX(6deg) translateZ(28px) translateY(0px);
   }
   50% {
-    transform: rotateY(15deg) rotateX(2deg) translateZ(26px) translateY(-8px);
+    transform: perspective(650px) rotateY(22deg) rotateX(3deg) translateZ(40px) translateY(-8px);
   }
 }
 
 @keyframes floatCard2Curved {
   0%, 100% {
-    transform: rotateY(22deg) rotateX(0deg) translateZ(28px) translateY(0px);
+    transform: perspective(650px) rotateY(30deg) rotateX(0deg) translateZ(40px) translateY(0px);
   }
   50% {
-    transform: rotateY(18deg) rotateX(1deg) translateZ(38px) translateY(-10px);
+    transform: perspective(650px) rotateY(25deg) rotateX(2deg) translateZ(52px) translateY(-10px);
   }
 }
 
 @keyframes floatCard3Curved {
   0%, 100% {
-    transform: rotateY(18deg) rotateX(-5deg) translateZ(18px) translateY(0px);
+    transform: perspective(650px) rotateY(26deg) rotateX(-7deg) translateZ(28px) translateY(0px);
   }
   50% {
-    transform: rotateY(15deg) rotateX(-3deg) translateZ(28px) translateY(-7px);
+    transform: perspective(650px) rotateY(22deg) rotateX(-4deg) translateZ(40px) translateY(-7px);
   }
 }
 
 @keyframes floatCard4Curved {
   0%, 100% {
-    transform: rotateY(-22deg) rotateX(1deg) translateZ(26px) translateY(0px);
+    transform: perspective(650px) rotateY(-30deg) rotateX(2deg) translateZ(38px) translateY(0px);
   }
   50% {
-    transform: rotateY(-18deg) rotateX(2deg) translateZ(36px) translateY(-9px);
+    transform: perspective(650px) rotateY(-25deg) rotateX(4deg) translateZ(50px) translateY(-9px);
   }
 }
 
