@@ -258,8 +258,6 @@ export default function HeroSection() {
 
   return (
     <section className={styles.heroSection}>
-      {/* Subtle Cosmic Ambient Dust */}
-      <ParticlesBackground count={2000} opacity={0.16} />
       <div className={styles.container}>
         {/* Left Content Column */}
         <div className={styles.contentCol}>

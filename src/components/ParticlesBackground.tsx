@@ -2,9 +2,6 @@
 
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 interface ParticlesBackgroundProps {
   count?: number;
@@ -15,12 +12,11 @@ interface ParticlesBackgroundProps {
 
 export class ParticlesSwarm {
   count: number;
-  container: HTMLElement;
+  canvas: HTMLCanvasElement;
   speedMult: number;
   scene: THREE.Scene;
   camera: THREE.PerspectiveCamera;
   renderer: THREE.WebGLRenderer;
-  composer: EffectComposer;
   dummy: THREE.Object3D;
   color: THREE.Color;
   target: THREE.Vector3;
@@ -32,46 +28,42 @@ export class ParticlesSwarm {
   animationFrameId: number | null = null;
   onResizeBound: () => void;
 
-  constructor(container: HTMLElement, count = 8000) {
+  constructor(canvas: HTMLCanvasElement, count = 7500) {
     this.count = count;
-    this.container = container;
+    this.canvas = canvas;
     this.speedMult = 0.85;
 
-    const width = container.clientWidth || window.innerWidth;
-    const height = container.clientHeight || window.innerHeight;
+    const width = canvas.clientWidth || canvas.parentElement?.clientWidth || window.innerWidth;
+    const height = canvas.clientHeight || canvas.parentElement?.clientHeight || window.innerHeight;
 
-    // SETUP
+    // SCENE & CAMERA (No fog to guarantee 100% transparent background)
     this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.FogExp2(0x000000, 0.008);
     this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 2000);
     this.camera.position.set(0, 0, 110);
 
+    // RENDERER - Pure alpha, completely transparent (no black box overlay)
     this.renderer = new THREE.WebGLRenderer({
+      canvas: this.canvas,
       antialias: true,
       powerPreference: 'high-performance',
       alpha: true,
     });
-    this.renderer.setSize(width, height);
+    this.renderer.setSize(width, height, false);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    this.renderer.setClearColor(0x000000, 0);
-    this.container.appendChild(this.renderer.domElement);
+    this.renderer.setClearColor(0x000000, 0); // 100% transparent clear color
 
-    // POST PROCESSING - ethereal bloom
-    this.composer = new EffectComposer(this.renderer);
-    this.composer.addPass(new RenderPass(this.scene, this.camera));
-    const bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 1.0, 0.4, 0.85);
-    bloomPass.strength = 1.35;
-    bloomPass.radius = 0.4;
-    bloomPass.threshold = 0.08;
-    this.composer.addPass(bloomPass);
-
-    // OBJECTS
+    // PARTICLES with Additive Blending for brilliant radiant glow without black box
     this.dummy = new THREE.Object3D();
     this.color = new THREE.Color();
     this.target = new THREE.Vector3();
 
-    this.geometry = new THREE.TetrahedronGeometry(0.24);
-    this.material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    this.geometry = new THREE.TetrahedronGeometry(0.32);
+    this.material = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
 
     this.mesh = new THREE.InstancedMesh(this.geometry, this.material, this.count);
     this.mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -98,29 +90,24 @@ export class ParticlesSwarm {
   }
 
   onResize() {
-    if (!this.container) return;
-    const width = this.container.clientWidth || window.innerWidth;
-    const height = this.container.clientHeight || window.innerHeight;
+    if (!this.canvas) return;
+    const width = this.canvas.clientWidth || this.canvas.parentElement?.clientWidth || window.innerWidth;
+    const height = this.canvas.clientHeight || this.canvas.parentElement?.clientHeight || window.innerHeight;
+    if (width === 0 || height === 0) return;
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
-    this.renderer.setSize(width, height);
-    this.composer.setSize(width, height);
+    this.renderer.setSize(width, height, false);
   }
 
   animate() {
     this.animationFrameId = requestAnimationFrame(this.animate);
     const time = this.clock.getElapsedTime() * this.speedMult;
 
-    const PARAMS: Record<string, number> = { s: 50, v: 0.8, h: 1, r: 0.8, d: 1 };
-    const addControl = (id: string, _l: string, _min: number, _max: number, val: number) => {
-      return PARAMS[id] !== undefined ? PARAMS[id] : val;
-    };
-
-    const s = addControl('s', 'Scale', 20, 90, 50);
-    const v = addControl('v', 'Flow Speed', 0, 3, 0.8);
-    const h = addControl('h', 'Heat', 0.2, 2, 1.0);
-    const r = addControl('r', 'Recovery', 0, 1, 0.8);
-    const d = addControl('d', 'Data Flow', 0, 2, 1.0);
+    const s = 50;
+    const v = 0.8;
+    const h = 1.0;
+    const r = 0.8;
+    const d = 1.0;
 
     const n = Math.max(1, this.count);
     const tau = 6.283185307179586;
@@ -215,35 +202,35 @@ export class ParticlesSwarm {
       this.mesh.instanceColor.needsUpdate = true;
     }
 
-    this.composer.render();
+    // Direct render with alpha: true - 100% transparent where no particles exist
+    this.renderer.render(this.scene, this.camera);
   }
 
   dispose() {
     if (this.animationFrameId !== null) {
       cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = null;
     }
     window.removeEventListener('resize', this.onResizeBound);
     this.geometry.dispose();
     this.material.dispose();
     this.scene.remove(this.mesh);
     this.renderer.dispose();
-    if (this.renderer.domElement && this.renderer.domElement.parentElement) {
-      this.renderer.domElement.parentElement.removeChild(this.renderer.domElement);
-    }
   }
 }
 
 export default function ParticlesBackground({
-  count = 8000,
-  opacity = 0.7,
+  count = 7500,
+  opacity = 0.85,
   className,
   style,
 }: ParticlesBackgroundProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
-    const swarm = new ParticlesSwarm(containerRef.current, count);
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const swarm = new ParticlesSwarm(canvas, count);
 
     return () => {
       swarm.dispose();
@@ -251,8 +238,8 @@ export default function ParticlesBackground({
   }, [count]);
 
   return (
-    <div
-      ref={containerRef}
+    <canvas
+      ref={canvasRef}
       className={className}
       style={{
         position: 'absolute',
@@ -262,7 +249,6 @@ export default function ParticlesBackground({
         pointerEvents: 'none',
         zIndex: 0,
         opacity,
-        overflow: 'hidden',
         ...style,
       }}
     />

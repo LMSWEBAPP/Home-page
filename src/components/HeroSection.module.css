@@ -157,22 +157,12 @@
 /* Space backdrop: Earth horizon below in deep space */
 .spaceBackdrop {
   position: absolute;
-  inset: -5% -8% -3% -8%;
+  inset: -6% -10% -4% -10%;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.95;
-  border-radius: 50%;
-  -webkit-mask-image: radial-gradient(ellipse 66% 66% at 50% 50%, #000000 35%, rgba(0, 0, 0, 0.85) 60%, rgba(0, 0, 0, 0.25) 78%, transparent 92%);
-  mask-image: radial-gradient(ellipse 66% 66% at 50% 50%, #000000 35%, rgba(0, 0, 0, 0.85) 60%, rgba(0, 0, 0, 0.25) 78%, transparent 92%);
-}
-
-.spaceBackdrop::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(ellipse 66% 66% at 50% 50%, transparent 35%, rgba(2, 5, 12, 0.35) 60%, #02050c 88%);
-  pointer-events: none;
+  opacity: 1;
+  -webkit-mask-image: radial-gradient(ellipse 68% 66% at 50% 55%, #000000 45%, rgba(0, 0, 0, 0.85) 65%, rgba(0, 0, 0, 0.25) 85%, transparent 100%);
+  mask-image: radial-gradient(ellipse 68% 66% at 50% 55%, #000000 45%, rgba(0, 0, 0, 0.85) 65%, rgba(0, 0, 0, 0.25) 85%, transparent 100%);
 }
 
 .spaceBackdropImg {
@@ -180,19 +170,15 @@
   height: 100%;
   object-fit: cover;
   object-position: center bottom;
-  border-radius: 50%;
 }
 
-/* 3D Particle Swarm in stage behind the mascot */
+/* 3D Particle Swarm in stage behind the mascot (100% transparent background) */
 .stageParticlesWrapper {
   position: absolute;
-  inset: -12% -12% -2% -12%;
+  inset: -14% -14% -4% -14%;
   z-index: 1;
   pointer-events: none;
   overflow: visible;
-  border-radius: 50%;
-  -webkit-mask-image: radial-gradient(ellipse 66% 66% at 50% 50%, #000000 40%, rgba(0, 0, 0, 0.8) 65%, transparent 90%);
-  mask-image: radial-gradient(ellipse 66% 66% at 50% 50%, #000000 40%, rgba(0, 0, 0, 0.8) 65%, transparent 90%);
 }
 
 /* Central Mascot Container: Perfectly holds both layered human & bot images */
