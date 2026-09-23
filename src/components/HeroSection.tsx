@@ -4,6 +4,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
 import styles from './HeroSection.module.css';
 import { BookOpen, Lightbulb, Target } from 'lucide-react';
+import ParticlesBackground from './ParticlesBackground';
 
 interface TrailPoint {
   x: number;
@@ -257,6 +258,8 @@ export default function HeroSection() {
 
   return (
     <section className={styles.heroSection}>
+      {/* Subtle Three.js Background Particle Swarm */}
+      <ParticlesBackground count={8000} opacity={0.34} />
       <div className={styles.container}>
         {/* Left Content Column */}
         <div className={styles.contentCol}>
@@ -344,34 +347,29 @@ export default function HeroSection() {
               }`}
               onClick={() => setActiveCard(activeCard === 'concepts' ? null : 'concepts')}
             >
-              {/* 3D Physically Curved Glass Plate SVG */}
+              {/* 3D Physically Curved Glass Plate SVG - NO GLOW */}
               <svg className={styles.curvedPlateSvg} viewBox="0 0 160 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id="glassBg1" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#1e2c56" stopOpacity="0.88" />
-                    <stop offset="25%" stopColor="#131e3d" stopOpacity="0.78" />
-                    <stop offset="50%" stopColor="#253c72" stopOpacity="0.74" />
-                    <stop offset="78%" stopColor="#0b132c" stopOpacity="0.88" />
-                    <stop offset="100%" stopColor="#040818" stopOpacity="0.96" />
+                    <stop offset="0%" stopColor="#1a2544" stopOpacity="0.85" />
+                    <stop offset="25%" stopColor="#101830" stopOpacity="0.75" />
+                    <stop offset="50%" stopColor="#1e2d52" stopOpacity="0.7" />
+                    <stop offset="78%" stopColor="#0a1024" stopOpacity="0.85" />
+                    <stop offset="100%" stopColor="#040612" stopOpacity="0.94" />
                   </linearGradient>
                   <linearGradient id="glassStroke1" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.8" />
-                    <stop offset="45%" stopColor="#38bdf8" stopOpacity="0.7" />
-                    <stop offset="100%" stopColor="#818cf8" stopOpacity="0.4" />
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.4" />
+                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.16" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.08" />
                   </linearGradient>
                   <linearGradient id="rimGleam1" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.25" />
-                    <stop offset="48%" stopColor="#ffffff" stopOpacity="0.98" />
-                    <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.45" />
-                  </linearGradient>
-                  <linearGradient id="botGlow1" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.1" />
-                    <stop offset="50%" stopColor="#38bdf8" stopOpacity="0.5" />
-                    <stop offset="100%" stopColor="#818cf8" stopOpacity="0.15" />
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.05" />
+                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.65" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.1" />
                   </linearGradient>
                   <linearGradient id="sheenGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="#ffffff" stopOpacity="0.0" />
-                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.45" />
+                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.25" />
                     <stop offset="100%" stopColor="#ffffff" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
@@ -380,41 +378,41 @@ export default function HeroSection() {
                   d="M 8,20 Q 80,7 152,16 C 158,18 158,110 152,112 L 152,112 Q 80,103 8,116 C 2,114 2,22 8,20 Z"
                   fill="url(#glassBg1)"
                   stroke="url(#glassStroke1)"
-                  strokeWidth="1.5"
+                  strokeWidth="1.2"
                   className={styles.curvedPlatePath}
                 />
-                {/* Glowing Top Curved Rim */}
+                {/* Subtle White Specular Top Rim */}
                 <path
                   d="M 10,19 Q 80,6 150,15"
                   fill="none"
                   stroke="url(#rimGleam1)"
-                  strokeWidth="1.8"
+                  strokeWidth="1.1"
                   strokeLinecap="round"
                 />
-                {/* Subtle Bottom Curved Rim */}
-                <path
-                  d="M 10,115 Q 80,102 150,111"
-                  fill="none"
-                  stroke="url(#botGlow1)"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                />
-                {/* Curved Surface Gloss Sheen */}
+                {/* Curved Surface Glass Sheen */}
                 <path
                   d="M 14,35 Q 80,22 146,31"
                   fill="none"
                   stroke="url(#sheenGrad1)"
-                  strokeWidth="1.1"
+                  strokeWidth="1.0"
                   strokeLinecap="round"
+                />
+                {/* Subtle HUD Latitude Guide Arc */}
+                <path
+                  d="M 14,56 Q 80,43 146,52"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.06)"
+                  strokeWidth="0.8"
+                  strokeDasharray="3 3"
                 />
               </svg>
 
-              <div className={`${styles.cardIconBox} ${styles.iconBoxCyan}`}>
+              <div className={`${styles.cardIconBox} ${styles.cardIconBoxLeft} ${styles.iconBoxCyan}`}>
                 <BookOpen size={20} className={styles.cyanIconSvg} />
               </div>
-              <div className={styles.cardTextCol}>
-                <span className={styles.cardWord}>Learn</span>
-                <span className={styles.cardWord}>Concepts</span>
+              <div className={`${styles.cardTextCol} ${styles.cardTextColLeft}`}>
+                <span className={`${styles.cardWord} ${styles.curvedWordLine1}`}>Learn</span>
+                <span className={`${styles.cardWord} ${styles.curvedWordLine2}`}>Concepts</span>
               </div>
               <div className={styles.cardShine}></div>
             </div>
@@ -426,34 +424,29 @@ export default function HeroSection() {
               }`}
               onClick={() => setActiveCard(activeCard === 'practice' ? null : 'practice')}
             >
-              {/* 3D Physically Curved Glass Plate SVG */}
+              {/* 3D Physically Curved Glass Plate SVG - NO GLOW */}
               <svg className={styles.curvedPlateSvg} viewBox="0 0 160 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id="glassBg2" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#122a44" stopOpacity="0.88" />
-                    <stop offset="25%" stopColor="#0b1c30" stopOpacity="0.78" />
-                    <stop offset="50%" stopColor="#183c5e" stopOpacity="0.74" />
-                    <stop offset="78%" stopColor="#061222" stopOpacity="0.88" />
-                    <stop offset="100%" stopColor="#020812" stopOpacity="0.96" />
+                    <stop offset="0%" stopColor="#122438" stopOpacity="0.85" />
+                    <stop offset="25%" stopColor="#0b1724" stopOpacity="0.75" />
+                    <stop offset="50%" stopColor="#162e48" stopOpacity="0.7" />
+                    <stop offset="78%" stopColor="#07101a" stopOpacity="0.85" />
+                    <stop offset="100%" stopColor="#02060c" stopOpacity="0.94" />
                   </linearGradient>
                   <linearGradient id="glassStroke2" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.8" />
-                    <stop offset="45%" stopColor="#06b6d4" stopOpacity="0.7" />
-                    <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.4" />
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.4" />
+                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.16" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.08" />
                   </linearGradient>
                   <linearGradient id="rimGleam2" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.25" />
-                    <stop offset="48%" stopColor="#ffffff" stopOpacity="0.98" />
-                    <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.45" />
-                  </linearGradient>
-                  <linearGradient id="botGlow2" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.1" />
-                    <stop offset="50%" stopColor="#06b6d4" stopOpacity="0.5" />
-                    <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.15" />
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.05" />
+                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.65" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.1" />
                   </linearGradient>
                   <linearGradient id="sheenGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="#ffffff" stopOpacity="0.0" />
-                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.45" />
+                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.25" />
                     <stop offset="100%" stopColor="#ffffff" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
@@ -462,41 +455,41 @@ export default function HeroSection() {
                   d="M 8,20 Q 80,7 152,16 C 158,18 158,110 152,112 L 152,112 Q 80,103 8,116 C 2,114 2,22 8,20 Z"
                   fill="url(#glassBg2)"
                   stroke="url(#glassStroke2)"
-                  strokeWidth="1.5"
+                  strokeWidth="1.2"
                   className={styles.curvedPlatePath}
                 />
-                {/* Glowing Top Curved Rim */}
+                {/* Subtle White Specular Top Rim */}
                 <path
                   d="M 10,19 Q 80,6 150,15"
                   fill="none"
                   stroke="url(#rimGleam2)"
-                  strokeWidth="1.8"
+                  strokeWidth="1.1"
                   strokeLinecap="round"
                 />
-                {/* Subtle Bottom Curved Rim */}
-                <path
-                  d="M 10,115 Q 80,102 150,111"
-                  fill="none"
-                  stroke="url(#botGlow2)"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                />
-                {/* Curved Surface Gloss Sheen */}
+                {/* Curved Surface Glass Sheen */}
                 <path
                   d="M 14,35 Q 80,22 146,31"
                   fill="none"
                   stroke="url(#sheenGrad2)"
-                  strokeWidth="1.1"
+                  strokeWidth="1.0"
                   strokeLinecap="round"
+                />
+                {/* Subtle HUD Latitude Guide Arc */}
+                <path
+                  d="M 14,56 Q 80,43 146,52"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.06)"
+                  strokeWidth="0.8"
+                  strokeDasharray="3 3"
                 />
               </svg>
 
-              <div className={`${styles.cardIconBox} ${styles.iconBoxElectricCyan}`}>
+              <div className={`${styles.cardIconBox} ${styles.cardIconBoxLeft} ${styles.iconBoxElectricCyan}`}>
                 <Lightbulb size={20} className={styles.cyanIconSvg} />
               </div>
-              <div className={styles.cardTextCol}>
-                <span className={styles.cardWord}>Practice</span>
-                <span className={styles.cardWord}>& Solve</span>
+              <div className={`${styles.cardTextCol} ${styles.cardTextColLeft}`}>
+                <span className={`${styles.cardWord} ${styles.curvedWordLine1}`}>Practice</span>
+                <span className={`${styles.cardWord} ${styles.curvedWordLine2}`}>& Solve</span>
               </div>
               <div className={styles.cardShine}></div>
             </div>
@@ -508,34 +501,29 @@ export default function HeroSection() {
               }`}
               onClick={() => setActiveCard(activeCard === 'goals' ? null : 'goals')}
             >
-              {/* 3D Physically Curved Glass Plate SVG */}
+              {/* 3D Physically Curved Glass Plate SVG - NO GLOW */}
               <svg className={styles.curvedPlateSvg} viewBox="0 0 160 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id="glassBg3" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#2a1444" stopOpacity="0.88" />
-                    <stop offset="25%" stopColor="#1c0b30" stopOpacity="0.78" />
-                    <stop offset="50%" stopColor="#38185c" stopOpacity="0.74" />
-                    <stop offset="78%" stopColor="#120622" stopOpacity="0.88" />
-                    <stop offset="100%" stopColor="#06020e" stopOpacity="0.96" />
+                    <stop offset="0%" stopColor="#221238" stopOpacity="0.85" />
+                    <stop offset="25%" stopColor="#160924" stopOpacity="0.75" />
+                    <stop offset="50%" stopColor="#2c1448" stopOpacity="0.7" />
+                    <stop offset="78%" stopColor="#0e0418" stopOpacity="0.85" />
+                    <stop offset="100%" stopColor="#06020c" stopOpacity="0.94" />
                   </linearGradient>
                   <linearGradient id="glassStroke3" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.8" />
-                    <stop offset="45%" stopColor="#c084fc" stopOpacity="0.7" />
-                    <stop offset="100%" stopColor="#e879f9" stopOpacity="0.4" />
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.4" />
+                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.16" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.08" />
                   </linearGradient>
                   <linearGradient id="rimGleam3" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.25" />
-                    <stop offset="48%" stopColor="#ffffff" stopOpacity="0.98" />
-                    <stop offset="100%" stopColor="#c084fc" stopOpacity="0.45" />
-                  </linearGradient>
-                  <linearGradient id="botGlow3" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#c084fc" stopOpacity="0.1" />
-                    <stop offset="50%" stopColor="#c084fc" stopOpacity="0.5" />
-                    <stop offset="100%" stopColor="#e879f9" stopOpacity="0.15" />
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.05" />
+                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.65" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.1" />
                   </linearGradient>
                   <linearGradient id="sheenGrad3" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="#ffffff" stopOpacity="0.0" />
-                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.45" />
+                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.25" />
                     <stop offset="100%" stopColor="#ffffff" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
@@ -544,41 +532,41 @@ export default function HeroSection() {
                   d="M 8,20 Q 80,7 152,16 C 158,18 158,110 152,112 L 152,112 Q 80,103 8,116 C 2,114 2,22 8,20 Z"
                   fill="url(#glassBg3)"
                   stroke="url(#glassStroke3)"
-                  strokeWidth="1.5"
+                  strokeWidth="1.2"
                   className={styles.curvedPlatePath}
                 />
-                {/* Glowing Top Curved Rim */}
+                {/* Subtle White Specular Top Rim */}
                 <path
                   d="M 10,19 Q 80,6 150,15"
                   fill="none"
                   stroke="url(#rimGleam3)"
-                  strokeWidth="1.8"
+                  strokeWidth="1.1"
                   strokeLinecap="round"
                 />
-                {/* Subtle Bottom Curved Rim */}
-                <path
-                  d="M 10,115 Q 80,102 150,111"
-                  fill="none"
-                  stroke="url(#botGlow3)"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                />
-                {/* Curved Surface Gloss Sheen */}
+                {/* Curved Surface Glass Sheen */}
                 <path
                   d="M 14,35 Q 80,22 146,31"
                   fill="none"
                   stroke="url(#sheenGrad3)"
-                  strokeWidth="1.1"
+                  strokeWidth="1.0"
                   strokeLinecap="round"
+                />
+                {/* Subtle HUD Latitude Guide Arc */}
+                <path
+                  d="M 14,56 Q 80,43 146,52"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.06)"
+                  strokeWidth="0.8"
+                  strokeDasharray="3 3"
                 />
               </svg>
 
-              <div className={`${styles.cardIconBox} ${styles.iconBoxPurple}`}>
+              <div className={`${styles.cardIconBox} ${styles.cardIconBoxLeft} ${styles.iconBoxPurple}`}>
                 <Target size={20} className={styles.purpleIconSvg} />
               </div>
-              <div className={styles.cardTextCol}>
-                <span className={styles.cardWord}>Achieve</span>
-                <span className={styles.cardWord}>Your Goals</span>
+              <div className={`${styles.cardTextCol} ${styles.cardTextColLeft}`}>
+                <span className={`${styles.cardWord} ${styles.curvedWordLine1}`}>Achieve</span>
+                <span className={`${styles.cardWord} ${styles.curvedWordLine2}`}>Your Goals</span>
               </div>
               <div className={styles.cardShine}></div>
             </div>
@@ -590,34 +578,29 @@ export default function HeroSection() {
               }`}
               onClick={() => setActiveCard(activeCard === 'progress' ? null : 'progress')}
             >
-              {/* 3D Physically Curved Glass Plate SVG (Right Mirror Curve) */}
+              {/* 3D Physically Curved Glass Plate SVG - Mirrored, NO GLOW */}
               <svg className={styles.curvedPlateSvg} viewBox="0 0 160 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id="glassBg4" x1="100%" y1="0%" x2="0%" y2="0%">
-                    <stop offset="0%" stopColor="#221846" stopOpacity="0.88" />
-                    <stop offset="25%" stopColor="#150e30" stopOpacity="0.78" />
-                    <stop offset="50%" stopColor="#2e205c" stopOpacity="0.74" />
-                    <stop offset="78%" stopColor="#0e0822" stopOpacity="0.88" />
-                    <stop offset="100%" stopColor="#04020e" stopOpacity="0.96" />
+                    <stop offset="0%" stopColor="#1e1438" stopOpacity="0.85" />
+                    <stop offset="25%" stopColor="#120b24" stopOpacity="0.75" />
+                    <stop offset="50%" stopColor="#261a48" stopOpacity="0.7" />
+                    <stop offset="78%" stopColor="#0b0618" stopOpacity="0.85" />
+                    <stop offset="100%" stopColor="#04020a" stopOpacity="0.94" />
                   </linearGradient>
                   <linearGradient id="glassStroke4" x1="100%" y1="0%" x2="0%" y2="0%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.8" />
-                    <stop offset="45%" stopColor="#818cf8" stopOpacity="0.7" />
-                    <stop offset="100%" stopColor="#c084fc" stopOpacity="0.4" />
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.4" />
+                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.16" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.08" />
                   </linearGradient>
                   <linearGradient id="rimGleam4" x1="100%" y1="0%" x2="0%" y2="0%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.25" />
-                    <stop offset="48%" stopColor="#ffffff" stopOpacity="0.98" />
-                    <stop offset="100%" stopColor="#818cf8" stopOpacity="0.45" />
-                  </linearGradient>
-                  <linearGradient id="botGlow4" x1="100%" y1="0%" x2="0%" y2="0%">
-                    <stop offset="0%" stopColor="#818cf8" stopOpacity="0.1" />
-                    <stop offset="50%" stopColor="#818cf8" stopOpacity="0.5" />
-                    <stop offset="100%" stopColor="#c084fc" stopOpacity="0.15" />
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.05" />
+                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.65" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.1" />
                   </linearGradient>
                   <linearGradient id="sheenGrad4" x1="100%" y1="0%" x2="0%" y2="0%">
                     <stop offset="0%" stopColor="#ffffff" stopOpacity="0.0" />
-                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.45" />
+                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.25" />
                     <stop offset="100%" stopColor="#ffffff" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
@@ -626,36 +609,36 @@ export default function HeroSection() {
                   d="M 8,16 Q 80,7 152,20 C 158,22 158,114 152,116 L 152,116 Q 80,103 8,112 C 2,110 2,18 8,16 Z"
                   fill="url(#glassBg4)"
                   stroke="url(#glassStroke4)"
-                  strokeWidth="1.5"
+                  strokeWidth="1.2"
                   className={styles.curvedPlatePath}
                 />
-                {/* Glowing Top Curved Rim */}
+                {/* Subtle White Specular Top Rim */}
                 <path
                   d="M 10,15 Q 80,6 150,19"
                   fill="none"
                   stroke="url(#rimGleam4)"
-                  strokeWidth="1.8"
+                  strokeWidth="1.1"
                   strokeLinecap="round"
                 />
-                {/* Subtle Bottom Curved Rim */}
-                <path
-                  d="M 10,111 Q 80,102 150,115"
-                  fill="none"
-                  stroke="url(#botGlow4)"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                />
-                {/* Curved Surface Gloss Sheen */}
+                {/* Curved Surface Glass Sheen */}
                 <path
                   d="M 14,31 Q 80,22 146,35"
                   fill="none"
                   stroke="url(#sheenGrad4)"
-                  strokeWidth="1.1"
+                  strokeWidth="1.0"
                   strokeLinecap="round"
+                />
+                {/* Subtle HUD Latitude Guide Arc */}
+                <path
+                  d="M 14,54 Q 80,43 146,58"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.06)"
+                  strokeWidth="0.8"
+                  strokeDasharray="3 3"
                 />
               </svg>
 
-              <div className={`${styles.cardIconBox} ${styles.iconBoxIndigo}`}>
+              <div className={`${styles.cardIconBox} ${styles.cardIconBoxRight} ${styles.iconBoxIndigo}`}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <rect x="3" y="14" width="4.5" height="7" rx="1.5" fill="url(#barG1)" />
                   <rect x="9.75" y="9" width="4.5" height="12" rx="1.5" fill="url(#barG2)" />
@@ -671,14 +654,14 @@ export default function HeroSection() {
                     </linearGradient>
                     <linearGradient id="barG3" x1="0" y1="0" x2="0" y2="1">
                       <stop stopColor="#c084fc" />
-                      <stop offset="1" stopColor="#e879f9" />
+                      <stop offset="1" stopColor="#ec4899" />
                     </linearGradient>
                   </defs>
                 </svg>
               </div>
-              <div className={styles.cardTextCol}>
-                <span className={styles.cardWord}>Track</span>
-                <span className={styles.cardWord}>Progress</span>
+              <div className={`${styles.cardTextCol} ${styles.cardTextColRight}`}>
+                <span className={`${styles.cardWord} ${styles.curvedWordLine1Right}`}>Track</span>
+                <span className={`${styles.cardWord} ${styles.curvedWordLine2Right}`}>Progress</span>
               </div>
               <div className={styles.cardShine}></div>
             </div>
