@@ -1,0 +1,165 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 1.25rem 3rem;
+  background: rgba(3, 7, 18, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.container {
+  max-width: 1380px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Left Logo */
+.logoWrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+.starIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.8)) drop-shadow(0 0 20px rgba(168, 85, 247, 0.4));
+}
+
+.brandTexts {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.brandTitle {
+  font-family: var(--font-space), -apple-system, sans-serif;
+  font-weight: 900;
+  font-size: 1.15rem;
+  letter-spacing: 0.14em;
+  color: #ffffff;
+}
+
+.brandSubtitle {
+  font-family: var(--font-space), monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.16em;
+  margin-top: 3px;
+}
+
+/* Center Nav Links */
+.navMenu {
+  display: flex;
+  align-items: center;
+  gap: 1.85rem;
+}
+
+.navLink {
+  position: relative;
+  background: none;
+  border: none;
+  color: #cbd5e1;
+  font-size: 0.92rem;
+  font-weight: 500;
+  padding: 0.5rem 0.25rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.navLink:hover {
+  color: #ffffff;
+}
+
+/* Active Link Glow Indicator (Light blue glowing capsule pill centered under "Home") */
+.activeNavLink {
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+.activeGlowIndicator {
+  position: absolute;
+  bottom: -4px;
+  width: 22px;
+  height: 3px;
+  background: #38bdf8;
+  border-radius: 999px;
+  box-shadow: 0 0 10px #38bdf8, 0 0 18px #38bdf8;
+}
+
+/* Right Action Buttons */
+.rightActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.searchBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(18, 24, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(12px);
+}
+
+.searchBtn:hover {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(28, 36, 60, 0.9);
+  transform: scale(1.04);
+}
+
+.searchIcon {
+  stroke-width: 2.2;
+}
+
+/* Gradient Get Started Pill Button */
+.getStartedBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.65rem 1.45rem;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #c084fc 100%);
+  border: none;
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.45);
+  transition: all 0.25s ease;
+}
+
+.getStartedBtn:hover {
+  box-shadow: 0 0 30px rgba(168, 85, 247, 0.65);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 990px) {
+  .navMenu {
+    display: none;
+  }
+  .header {
+    padding: 1rem 1.5rem;
+  }
+}
