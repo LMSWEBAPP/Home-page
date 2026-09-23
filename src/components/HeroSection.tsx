@@ -3,7 +3,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
 import styles from './HeroSection.module.css';
-import { ArrowRight, Play, BookOpen, Lightbulb, Target } from 'lucide-react';
+import { BookOpen, Lightbulb, Target } from 'lucide-react';
 
 interface TrailPoint {
   x: number;
@@ -260,17 +260,6 @@ export default function HeroSection() {
       <div className={styles.container}>
         {/* Left Content Column */}
         <div className={styles.contentCol}>
-          {/* Eyebrow Pill */}
-          <div className={styles.eyebrowPill}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M12 0L14.4 9.6L24 12L14.4 14.4L12 24L9.6 14.4L0 12L9.6 9.6L12 0Z"
-                fill="#38bdf8"
-              />
-            </svg>
-            <span>POWERED BY AI &bull; DESIGNED FOR LEARNERS</span>
-          </div>
-
           {/* Headline - Prioritising VEDIKA AI TUTOR with typography animation */}
           <h1 className={styles.mainTitle}>
             <span className={styles.titleLead}>MEET YOUR PERSONAL</span>
@@ -278,41 +267,10 @@ export default function HeroSection() {
             <span className={styles.titleSubline}>Learn Smarter. Go Further.</span>
           </h1>
 
-          {/* Subtitle - Reduced & Punchy */}
+          {/* Subtitle - Clean & Impactful */}
           <p className={styles.description}>
             Personalized intelligence and real-time concept mastery &mdash; built for every curious mind.
           </p>
-
-          {/* CTA Buttons */}
-          <div className={styles.ctaRow}>
-            <button type="button" className={styles.getStartedPill}>
-              <span>Get Started</span>
-              <ArrowRight size={16} />
-            </button>
-
-            <button type="button" className={styles.watchVideoPill}>
-              <div className={styles.playIconCircle}>
-                <Play size={13} fill="#ffffff" color="#ffffff" className={styles.playSvg} />
-              </div>
-              <div className={styles.watchVideoTexts}>
-                <span className={styles.watchVideoTitle}>Watch Demo</span>
-                <span className={styles.watchVideoDuration}>1 min</span>
-              </div>
-            </button>
-          </div>
-
-          {/* Streamlined Trust Badge */}
-          <div className={styles.trustBadge}>
-            <div className={styles.starsRow}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="#fbbf24" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="#fbbf24" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="#fbbf24" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="#fbbf24" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="#fbbf24" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            </div>
-            <span className={styles.trustText}>Trusted by 10,000+ students worldwide</span>
-          </div>
-
         </div>
 
         {/* Right Visual Stage */}

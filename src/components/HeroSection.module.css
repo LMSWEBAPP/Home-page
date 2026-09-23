@@ -30,48 +30,30 @@
   z-index: 5;
 }
 
-.eyebrowPill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  background: rgba(14, 22, 38, 0.85);
-  border: 1px solid rgba(56, 189, 248, 0.28);
-  border-radius: 9999px;
-  padding: 0.35rem 0.95rem;
-  font-family: var(--font-space), monospace;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: #cbd5e1;
-  margin-bottom: 1.75rem;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 0 15px rgba(56, 189, 248, 0.12);
-}
-
 .mainTitle {
   font-family: var(--font-space), -apple-system, sans-serif;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
 }
 
 .titleLead {
-  font-size: clamp(0.85rem, 1.3vw, 1.1rem);
+  font-size: clamp(0.9rem, 1.3vw, 1.15rem);
   font-weight: 700;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #94a3b8;
-  margin-bottom: 0.35rem;
+  color: #38bdf8;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
 }
 
 .vedikaTutorText {
   display: inline-block;
   font-family: var(--font-space), -apple-system, sans-serif;
-  font-size: clamp(3rem, 5.2vw, 5.2rem);
+  font-size: clamp(3.2rem, 5.5vw, 5.5rem);
   font-weight: 900;
-  letter-spacing: -0.02em;
-  line-height: 1.05;
+  letter-spacing: -0.025em;
+  line-height: 1.02;
   text-transform: uppercase;
   background: linear-gradient(
     90deg,
@@ -105,11 +87,11 @@
 }
 
 .titleSubline {
-  font-size: clamp(1.35rem, 2.1vw, 2rem);
+  font-size: clamp(1.4rem, 2.2vw, 2.2rem);
   font-weight: 700;
   color: #f1f5f9;
   letter-spacing: -0.01em;
-  margin-top: 0.4rem;
+  margin-top: 0.5rem;
 }
 
 .whiteLine {
@@ -126,118 +108,9 @@
 
 .description {
   color: #94a3b8;
-  font-size: 1.05rem;
-  line-height: 1.6;
-  margin-bottom: 2rem;
-  max-width: 460px;
-}
-
-/* CTA Row */
-.ctaRow {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  margin-bottom: 2.25rem;
-  flex-wrap: wrap;
-}
-
-.getStartedPill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 0.85rem 1.85rem;
-  border-radius: 9999px;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #c084fc 100%);
-  border: none;
-  color: #ffffff;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 4px 25px rgba(139, 92, 246, 0.45);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.getStartedPill:hover {
-  box-shadow: 0 0 35px rgba(168, 85, 247, 0.65);
-  transform: translateY(-2px);
-}
-
-.watchVideoPill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.85rem;
-  padding: 0.55rem 1.4rem 0.55rem 0.65rem;
-  border-radius: 9999px;
-  background: rgba(14, 20, 36, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  cursor: pointer;
-  transition: all 0.25s ease;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-.watchVideoPill:hover {
-  background: rgba(22, 30, 52, 0.9);
-  border-color: rgba(255, 255, 255, 0.25);
-  transform: translateY(-2px);
-}
-
-.playIconCircle {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.playSvg {
-  margin-left: 2px;
-}
-
-.watchVideoTexts {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  line-height: 1.2;
-}
-
-.watchVideoTitle {
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: #ffffff;
-}
-
-.watchVideoDuration {
-  font-size: 0.72rem;
-  color: #64748b;
-  font-family: var(--font-space), monospace;
-}
-
-/* Streamlined Trust Badge */
-.trustBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.85rem;
-  padding: 0.55rem 1rem;
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  width: fit-content;
-}
-
-.starsRow {
-  display: flex;
-  align-items: center;
-  gap: 0.2rem;
-}
-
-.trustText {
-  font-size: 0.82rem;
-  color: #94a3b8;
-  font-weight: 500;
+  font-size: clamp(1.05rem, 1.25vw, 1.22rem);
+  line-height: 1.7;
+  max-width: 500px;
 }
 
 /* ========================================================= */
@@ -251,28 +124,54 @@
   width: 100%;
 }
 
+.visualCol::before {
+  content: '';
+  position: absolute;
+  width: 90%;
+  height: 90%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.12) 0%, rgba(56, 189, 248, 0.08) 45%, transparent 75%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+}
+
 .stageFrame {
   position: relative;
   width: 100%;
-  max-width: 680px;
+  max-width: 700px;
   aspect-ratio: 1.328 / 1;
-  border-radius: 28px;
-  overflow: hidden;
+  overflow: visible;
   cursor: crosshair;
   user-select: none;
   touch-action: none;
-  background: #02050c;
-  box-shadow: 0 25px 70px -15px rgba(0, 0, 0, 0.85), 0 0 45px -10px rgba(99, 102, 241, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  perspective: 1200px;
+  perspective-origin: 50% 50%;
+  transform-style: preserve-3d;
 }
 
-/* Space backdrop inside stage frame */
+/* Space backdrop blended neatly into the page without box edges */
 .spaceBackdrop {
   position: absolute;
-  inset: 0;
+  inset: -6% -8% -6% -8%;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.85;
+  opacity: 0.9;
+  border-radius: 50%;
+  -webkit-mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, #000000 22%, rgba(0, 0, 0, 0.82) 46%, rgba(0, 0, 0, 0.3) 68%, transparent 88%);
+  mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, #000000 22%, rgba(0, 0, 0, 0.82) 46%, rgba(0, 0, 0, 0.3) 68%, transparent 88%);
+}
+
+.spaceBackdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(ellipse 65% 65% at 50% 50%, transparent 22%, rgba(2, 5, 12, 0.5) 55%, #02050c 86%);
+  pointer-events: none;
 }
 
 .spaceBackdropImg {
@@ -280,6 +179,7 @@
   height: 100%;
   object-fit: cover;
   object-position: center;
+  border-radius: 50%;
 }
 
 /* Central Mascot Container: Perfectly holds both layered human & bot images */
@@ -402,7 +302,7 @@
 }
 
 /* ========================================================= */
-/* 4 REAL GLASSMORPHISM FLOATING BOXES                      */
+/* 4 REAL GLASSMORPHISM FLOATING BOXES - 3D CURVED SPACE    */
 /* ========================================================= */
 .glassCard {
   position: absolute;
@@ -411,29 +311,20 @@
   align-items: flex-start;
   justify-content: center;
   gap: 0.45rem;
-  padding: 0.75rem 0.95rem;
-  border-radius: 15px;
-  background: rgba(13, 20, 42, 0.52);
-  backdrop-filter: blur(20px) saturate(190%);
-  -webkit-backdrop-filter: blur(20px) saturate(190%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 14px 35px -8px rgba(0, 0, 0, 0.75),
-              inset 0 1px 1px rgba(255, 255, 255, 0.4),
-              0 0 25px -5px rgba(56, 189, 248, 0.2);
+  padding: 0.8rem 1rem;
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   cursor: pointer;
   pointer-events: auto;
   z-index: 10;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.45s ease,
+              border-color 0.45s ease,
+              background 0.45s ease;
   overflow: hidden;
-}
-
-.glassCard:hover {
-  transform: translateY(-5px) scale(1.05);
-  background: rgba(18, 28, 58, 0.75);
-  border-color: rgba(56, 189, 248, 0.6);
-  box-shadow: 0 20px 45px -5px rgba(0, 0, 0, 0.85),
-              inset 0 1px 2px rgba(255, 255, 255, 0.55),
-              0 0 35px rgba(56, 189, 248, 0.4);
 }
 
 .activeCard {
@@ -447,7 +338,7 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.12) 0%, transparent 60%);
   pointer-events: none;
 }
 
@@ -514,78 +405,142 @@
   filter: drop-shadow(0 0 8px rgba(192, 132, 252, 0.8));
 }
 
-/* 4 Glass Cards Exact Positions Safely Away from Mascot */
+/* 4 Glass Cards Exact Positions - Curved Inward in 3D Space */
 
-/* 1. Learn Concepts (Top-Left) */
+/* 1. Learn Concepts (Top-Left) - Curved inward towards character */
 .cardLearnConcepts {
   top: 6%;
-  left: 2.5%;
-  min-width: 125px;
-  max-width: 138px;
-  animation: floatCard1 6s ease-in-out infinite;
+  left: 2%;
+  min-width: 126px;
+  max-width: 140px;
+  background: linear-gradient(118deg, rgba(255, 255, 255, 0.15) 0%, rgba(13, 22, 48, 0.58) 45%, rgba(9, 15, 34, 0.72) 100%);
+  border-radius: 16px 20px 20px 16px;
+  box-shadow: -6px 14px 35px -8px rgba(0, 0, 0, 0.75),
+              inset 1.5px 1px 2px rgba(255, 255, 255, 0.45),
+              inset -1px -1px 3px rgba(56, 189, 248, 0.2),
+              0 0 25px -5px rgba(56, 189, 248, 0.22);
+  transform: rotateY(18deg) rotateX(4deg) translateZ(16px);
+  animation: floatCard1Curved 6s ease-in-out infinite;
 }
 
-/* 2. Practice & Solve (Mid-Left, clear of character's arm) */
+.cardLearnConcepts:hover {
+  transform: rotateY(8deg) rotateX(2deg) translateZ(52px) translateY(-5px) scale(1.06) !important;
+  background: rgba(18, 28, 62, 0.8);
+  border-color: rgba(56, 189, 248, 0.65);
+  box-shadow: -8px 22px 48px -6px rgba(0, 0, 0, 0.85),
+              inset 1.5px 1px 2px rgba(255, 255, 255, 0.6),
+              0 0 35px rgba(56, 189, 248, 0.45);
+}
+
+/* 2. Practice & Solve (Mid-Left) - Deepest 3D curve in the center orbit */
 .cardPracticeSolve {
   top: 36%;
-  left: 1.5%;
+  left: 1%;
   min-width: 128px;
-  max-width: 140px;
-  animation: floatCard2 6.8s ease-in-out infinite 0.8s;
+  max-width: 142px;
+  background: linear-gradient(118deg, rgba(255, 255, 255, 0.15) 0%, rgba(13, 22, 48, 0.58) 45%, rgba(9, 15, 34, 0.72) 100%);
+  border-radius: 16px 20px 20px 16px;
+  box-shadow: -7px 16px 38px -8px rgba(0, 0, 0, 0.78),
+              inset 1.5px 1px 2px rgba(255, 255, 255, 0.45),
+              inset -1px -1px 3px rgba(6, 182, 212, 0.2),
+              0 0 25px -5px rgba(6, 182, 212, 0.25);
+  transform: rotateY(22deg) rotateX(0deg) translateZ(28px);
+  animation: floatCard2Curved 6.8s ease-in-out infinite 0.8s;
 }
 
-/* 3. Achieve Your Goals (Bottom-Left, clear of character's waist/leg) */
+.cardPracticeSolve:hover {
+  transform: rotateY(10deg) rotateX(0deg) translateZ(58px) translateY(-5px) scale(1.06) !important;
+  background: rgba(18, 28, 62, 0.8);
+  border-color: rgba(6, 182, 212, 0.65);
+  box-shadow: -8px 22px 48px -6px rgba(0, 0, 0, 0.85),
+              inset 1.5px 1px 2px rgba(255, 255, 255, 0.6),
+              0 0 35px rgba(6, 182, 212, 0.45);
+}
+
+/* 3. Achieve Your Goals (Bottom-Left) - Tilted along bottom curve */
 .cardAchieveGoals {
   top: 66%;
-  left: 2.5%;
+  left: 2%;
   min-width: 130px;
-  max-width: 142px;
-  animation: floatCard3 7.5s ease-in-out infinite 1.4s;
+  max-width: 144px;
+  background: linear-gradient(118deg, rgba(255, 255, 255, 0.15) 0%, rgba(13, 22, 48, 0.58) 45%, rgba(9, 15, 34, 0.72) 100%);
+  border-radius: 16px 20px 20px 16px;
+  box-shadow: -6px 14px 35px -8px rgba(0, 0, 0, 0.75),
+              inset 1.5px 1px 2px rgba(255, 255, 255, 0.45),
+              inset -1px -1px 3px rgba(192, 132, 252, 0.2),
+              0 0 25px -5px rgba(192, 132, 252, 0.25);
+  transform: rotateY(18deg) rotateX(-5deg) translateZ(18px);
+  animation: floatCard3Curved 7.5s ease-in-out infinite 1.4s;
 }
 
-/* 4. Track Progress (Mid-Right, clear of character's right side) */
+.cardAchieveGoals:hover {
+  transform: rotateY(8deg) rotateX(-2deg) translateZ(52px) translateY(-5px) scale(1.06) !important;
+  background: rgba(18, 28, 62, 0.8);
+  border-color: rgba(192, 132, 252, 0.65);
+  box-shadow: -8px 22px 48px -6px rgba(0, 0, 0, 0.85),
+              inset 1.5px 1px 2px rgba(255, 255, 255, 0.6),
+              0 0 35px rgba(192, 132, 252, 0.45);
+}
+
+/* 4. Track Progress (Mid-Right) - Curved inwards from the right */
 .cardTrackProgress {
   top: 38%;
-  right: 2%;
-  min-width: 125px;
-  max-width: 138px;
-  animation: floatCard4 6.2s ease-in-out infinite 0.4s;
+  right: 1.5%;
+  min-width: 126px;
+  max-width: 140px;
+  background: linear-gradient(242deg, rgba(255, 255, 255, 0.15) 0%, rgba(13, 22, 48, 0.58) 45%, rgba(9, 15, 34, 0.72) 100%);
+  border-radius: 20px 16px 16px 20px;
+  box-shadow: 7px 16px 38px -8px rgba(0, 0, 0, 0.78),
+              inset -1.5px 1px 2px rgba(255, 255, 255, 0.45),
+              inset 1px -1px 3px rgba(129, 140, 248, 0.2),
+              0 0 25px -5px rgba(129, 140, 248, 0.25);
+  transform: rotateY(-22deg) rotateX(1deg) translateZ(26px);
+  animation: floatCard4Curved 6.2s ease-in-out infinite 0.4s;
 }
 
-/* Floating Animations */
-@keyframes floatCard1 {
+.cardTrackProgress:hover {
+  transform: rotateY(-10deg) rotateX(0deg) translateZ(56px) translateY(-5px) scale(1.06) !important;
+  background: rgba(18, 28, 62, 0.8);
+  border-color: rgba(129, 140, 248, 0.65);
+  box-shadow: 8px 22px 48px -6px rgba(0, 0, 0, 0.85),
+              inset -1.5px 1px 2px rgba(255, 255, 255, 0.6),
+              0 0 35px rgba(129, 140, 248, 0.45);
+}
+
+/* 3D Floating Animations maintaining the subtle space curvature */
+@keyframes floatCard1Curved {
   0%, 100% {
-    transform: translateY(0px) rotate(0deg);
+    transform: rotateY(18deg) rotateX(4deg) translateZ(16px) translateY(0px);
   }
   50% {
-    transform: translateY(-8px) rotate(-0.5deg);
+    transform: rotateY(15deg) rotateX(2deg) translateZ(26px) translateY(-8px);
   }
 }
 
-@keyframes floatCard2 {
+@keyframes floatCard2Curved {
   0%, 100% {
-    transform: translateY(0px) rotate(0deg);
+    transform: rotateY(22deg) rotateX(0deg) translateZ(28px) translateY(0px);
   }
   50% {
-    transform: translateY(-10px) rotate(0.6deg);
+    transform: rotateY(18deg) rotateX(1deg) translateZ(38px) translateY(-10px);
   }
 }
 
-@keyframes floatCard3 {
+@keyframes floatCard3Curved {
   0%, 100% {
-    transform: translateY(0px) rotate(0deg);
+    transform: rotateY(18deg) rotateX(-5deg) translateZ(18px) translateY(0px);
   }
   50% {
-    transform: translateY(-7px) rotate(-0.4deg);
+    transform: rotateY(15deg) rotateX(-3deg) translateZ(28px) translateY(-7px);
   }
 }
 
-@keyframes floatCard4 {
+@keyframes floatCard4Curved {
   0%, 100% {
-    transform: translateY(0px) rotate(0deg);
+    transform: rotateY(-22deg) rotateX(1deg) translateZ(26px) translateY(0px);
   }
   50% {
-    transform: translateY(-9px) rotate(0.5deg);
+    transform: rotateY(-18deg) rotateX(2deg) translateZ(36px) translateY(-9px);
   }
 }
 
@@ -602,12 +557,6 @@
     align-items: center;
     text-align: center;
   }
-  .ctaRow {
-    justify-content: center;
-  }
-  .statsStrip {
-    justify-content: center;
-  }
   .description {
     max-width: 100%;
   }
@@ -619,21 +568,6 @@
 @media (max-width: 680px) {
   .heroSection {
     padding: 5rem 1.25rem 2rem 1.25rem;
-  }
-  .ctaRow {
-    flex-direction: column;
-    width: 100%;
-  }
-  .getStartedPill,
-  .watchVideoPill {
-    width: 100%;
-    justify-content: center;
-  }
-  .statsStrip {
-    gap: 1.25rem;
-  }
-  .statNumber {
-    font-size: 1.25rem;
   }
   .stageFrame {
     aspect-ratio: 1.15 / 1;
