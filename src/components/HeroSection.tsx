@@ -258,12 +258,12 @@ export default function HeroSection() {
 
   return (
     <section className={styles.heroSection}>
-      {/* Subtle Three.js Background Particle Swarm */}
-      <ParticlesBackground count={8000} opacity={0.34} />
+      {/* Subtle Cosmic Ambient Dust */}
+      <ParticlesBackground count={2000} opacity={0.16} />
       <div className={styles.container}>
         {/* Left Content Column */}
         <div className={styles.contentCol}>
-          {/* Headline - Prioritising VEDIKA AI TUTOR with typography animation */}
+          {/* Headline - Prioritising VEDIKA AI TUTOR with royal typography */}
           <h1 className={styles.mainTitle}>
             <span className={styles.titleLead}>MEET YOUR PERSONAL</span>
             <span className={styles.vedikaTutorText}>VEDIKA AI TUTOR</span>
@@ -285,15 +285,20 @@ export default function HeroSection() {
             onPointerEnter={handlePointerEnter}
             onPointerLeave={handlePointerLeave}
           >
-            {/* Space Backdrop */}
+            {/* Space Backdrop: Clean Earth Horizon below in deep space (no striped lines) */}
             <div className={styles.spaceBackdrop}>
               <Image
-                src="/vedika_space_backdrop.jpg"
-                alt="Cosmic Space Backdrop"
+                src="/vedika_earth_backdrop.jpg"
+                alt="Earth Horizon in Deep Space"
                 fill
                 priority
                 className={styles.spaceBackdropImg}
               />
+            </div>
+
+            {/* Glowing 3D Particle Swarm in place of the striped lines behind the mascot */}
+            <div className={styles.stageParticlesWrapper}>
+              <ParticlesBackground count={7500} opacity={0.78} />
             </div>
 
             {/* Central Mascot Container: Perfectly aligned Human & Bot */}
@@ -337,7 +342,7 @@ export default function HeroSection() {
             </div>
 
             {/* ========================================================= */}
-            {/* 4 REAL GLASSMORPHISM INTERACTIVE FLOATING BOXES          */}
+            {/* 4 PREMIUM CURVED GLASSMORPHISM FLOATING VISOR CARDS      */}
             {/* ========================================================= */}
 
             {/* Box 1: Learn Concepts (Top-Left) */}
@@ -347,62 +352,60 @@ export default function HeroSection() {
               }`}
               onClick={() => setActiveCard(activeCard === 'concepts' ? null : 'concepts')}
             >
-              {/* 3D Physically Curved Glass Plate SVG - NO GLOW */}
+              {/* Premium Visor Curved Plate SVG */}
               <svg className={styles.curvedPlateSvg} viewBox="0 0 160 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                  <linearGradient id="glassBg1" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#1a2544" stopOpacity="0.85" />
-                    <stop offset="25%" stopColor="#101830" stopOpacity="0.75" />
-                    <stop offset="50%" stopColor="#1e2d52" stopOpacity="0.7" />
-                    <stop offset="78%" stopColor="#0a1024" stopOpacity="0.85" />
-                    <stop offset="100%" stopColor="#040612" stopOpacity="0.94" />
+                  <linearGradient id="glassBg1" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#141f38" stopOpacity="0.88" />
+                    <stop offset="50%" stopColor="#0a1224" stopOpacity="0.80" />
+                    <stop offset="100%" stopColor="#030612" stopOpacity="0.94" />
                   </linearGradient>
                   <linearGradient id="glassStroke1" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.4" />
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.36" />
                     <stop offset="50%" stopColor="#ffffff" stopOpacity="0.16" />
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.08" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.06" />
                   </linearGradient>
                   <linearGradient id="rimGleam1" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="#ffffff" stopOpacity="0.05" />
-                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.65" />
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.1" />
+                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.85" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.10" />
                   </linearGradient>
                   <linearGradient id="sheenGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="#ffffff" stopOpacity="0.0" />
-                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.25" />
+                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.22" />
                     <stop offset="100%" stopColor="#ffffff" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
-                {/* Curved Panel Body */}
+                {/* Premium Curved Visor Panel */}
                 <path
-                  d="M 8,20 Q 80,7 152,16 C 158,18 158,110 152,112 L 152,112 Q 80,103 8,116 C 2,114 2,22 8,20 Z"
+                  d="M 16,12 Q 80,5 144,12 Q 156,13 156,24 L 156,106 Q 156,118 144,119 Q 80,112 16,119 Q 4,118 4,106 L 4,24 Q 4,13 16,12 Z"
                   fill="url(#glassBg1)"
                   stroke="url(#glassStroke1)"
-                  strokeWidth="1.2"
+                  strokeWidth="1.0"
                   className={styles.curvedPlatePath}
                 />
-                {/* Subtle White Specular Top Rim */}
+                {/* Specular Hairline Top Rim */}
                 <path
-                  d="M 10,19 Q 80,6 150,15"
+                  d="M 16,12 Q 80,5 144,12"
                   fill="none"
                   stroke="url(#rimGleam1)"
-                  strokeWidth="1.1"
+                  strokeWidth="0.9"
                   strokeLinecap="round"
                 />
-                {/* Curved Surface Glass Sheen */}
+                {/* Subtle Interior Glass Sheen Arc */}
                 <path
-                  d="M 14,35 Q 80,22 146,31"
+                  d="M 20,24 Q 80,17 140,24"
                   fill="none"
                   stroke="url(#sheenGrad1)"
-                  strokeWidth="1.0"
+                  strokeWidth="0.8"
                   strokeLinecap="round"
                 />
-                {/* Subtle HUD Latitude Guide Arc */}
+                {/* Subtle HUD Latitude Arc */}
                 <path
-                  d="M 14,56 Q 80,43 146,52"
+                  d="M 20,48 Q 80,41 140,48"
                   fill="none"
                   stroke="rgba(255,255,255,0.06)"
-                  strokeWidth="0.8"
+                  strokeWidth="0.7"
                   strokeDasharray="3 3"
                 />
               </svg>
@@ -424,62 +427,60 @@ export default function HeroSection() {
               }`}
               onClick={() => setActiveCard(activeCard === 'practice' ? null : 'practice')}
             >
-              {/* 3D Physically Curved Glass Plate SVG - NO GLOW */}
+              {/* Premium Visor Curved Plate SVG */}
               <svg className={styles.curvedPlateSvg} viewBox="0 0 160 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                  <linearGradient id="glassBg2" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#122438" stopOpacity="0.85" />
-                    <stop offset="25%" stopColor="#0b1724" stopOpacity="0.75" />
-                    <stop offset="50%" stopColor="#162e48" stopOpacity="0.7" />
-                    <stop offset="78%" stopColor="#07101a" stopOpacity="0.85" />
+                  <linearGradient id="glassBg2" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#0f2234" stopOpacity="0.88" />
+                    <stop offset="50%" stopColor="#071522" stopOpacity="0.80" />
                     <stop offset="100%" stopColor="#02060c" stopOpacity="0.94" />
                   </linearGradient>
                   <linearGradient id="glassStroke2" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.4" />
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.36" />
                     <stop offset="50%" stopColor="#ffffff" stopOpacity="0.16" />
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.08" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.06" />
                   </linearGradient>
                   <linearGradient id="rimGleam2" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="#ffffff" stopOpacity="0.05" />
-                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.65" />
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.1" />
+                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.85" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.10" />
                   </linearGradient>
                   <linearGradient id="sheenGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="#ffffff" stopOpacity="0.0" />
-                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.25" />
+                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.22" />
                     <stop offset="100%" stopColor="#ffffff" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
-                {/* Curved Panel Body */}
+                {/* Premium Curved Visor Panel */}
                 <path
-                  d="M 8,20 Q 80,7 152,16 C 158,18 158,110 152,112 L 152,112 Q 80,103 8,116 C 2,114 2,22 8,20 Z"
+                  d="M 16,12 Q 80,5 144,12 Q 156,13 156,24 L 156,106 Q 156,118 144,119 Q 80,112 16,119 Q 4,118 4,106 L 4,24 Q 4,13 16,12 Z"
                   fill="url(#glassBg2)"
                   stroke="url(#glassStroke2)"
-                  strokeWidth="1.2"
+                  strokeWidth="1.0"
                   className={styles.curvedPlatePath}
                 />
-                {/* Subtle White Specular Top Rim */}
+                {/* Specular Hairline Top Rim */}
                 <path
-                  d="M 10,19 Q 80,6 150,15"
+                  d="M 16,12 Q 80,5 144,12"
                   fill="none"
                   stroke="url(#rimGleam2)"
-                  strokeWidth="1.1"
+                  strokeWidth="0.9"
                   strokeLinecap="round"
                 />
-                {/* Curved Surface Glass Sheen */}
+                {/* Subtle Interior Glass Sheen Arc */}
                 <path
-                  d="M 14,35 Q 80,22 146,31"
+                  d="M 20,24 Q 80,17 140,24"
                   fill="none"
                   stroke="url(#sheenGrad2)"
-                  strokeWidth="1.0"
+                  strokeWidth="0.8"
                   strokeLinecap="round"
                 />
-                {/* Subtle HUD Latitude Guide Arc */}
+                {/* Subtle HUD Latitude Arc */}
                 <path
-                  d="M 14,56 Q 80,43 146,52"
+                  d="M 20,48 Q 80,41 140,48"
                   fill="none"
                   stroke="rgba(255,255,255,0.06)"
-                  strokeWidth="0.8"
+                  strokeWidth="0.7"
                   strokeDasharray="3 3"
                 />
               </svg>
@@ -501,62 +502,60 @@ export default function HeroSection() {
               }`}
               onClick={() => setActiveCard(activeCard === 'goals' ? null : 'goals')}
             >
-              {/* 3D Physically Curved Glass Plate SVG - NO GLOW */}
+              {/* Premium Visor Curved Plate SVG */}
               <svg className={styles.curvedPlateSvg} viewBox="0 0 160 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                  <linearGradient id="glassBg3" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#221238" stopOpacity="0.85" />
-                    <stop offset="25%" stopColor="#160924" stopOpacity="0.75" />
-                    <stop offset="50%" stopColor="#2c1448" stopOpacity="0.7" />
-                    <stop offset="78%" stopColor="#0e0418" stopOpacity="0.85" />
-                    <stop offset="100%" stopColor="#06020c" stopOpacity="0.94" />
+                  <linearGradient id="glassBg3" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#1e1334" stopOpacity="0.88" />
+                    <stop offset="50%" stopColor="#120922" stopOpacity="0.80" />
+                    <stop offset="100%" stopColor="#05020c" stopOpacity="0.94" />
                   </linearGradient>
                   <linearGradient id="glassStroke3" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.4" />
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.36" />
                     <stop offset="50%" stopColor="#ffffff" stopOpacity="0.16" />
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.08" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.06" />
                   </linearGradient>
                   <linearGradient id="rimGleam3" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="#ffffff" stopOpacity="0.05" />
-                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.65" />
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.1" />
+                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.85" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.10" />
                   </linearGradient>
                   <linearGradient id="sheenGrad3" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="#ffffff" stopOpacity="0.0" />
-                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.25" />
+                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.22" />
                     <stop offset="100%" stopColor="#ffffff" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
-                {/* Curved Panel Body */}
+                {/* Premium Curved Visor Panel */}
                 <path
-                  d="M 8,20 Q 80,7 152,16 C 158,18 158,110 152,112 L 152,112 Q 80,103 8,116 C 2,114 2,22 8,20 Z"
+                  d="M 16,12 Q 80,5 144,12 Q 156,13 156,24 L 156,106 Q 156,118 144,119 Q 80,112 16,119 Q 4,118 4,106 L 4,24 Q 4,13 16,12 Z"
                   fill="url(#glassBg3)"
                   stroke="url(#glassStroke3)"
-                  strokeWidth="1.2"
+                  strokeWidth="1.0"
                   className={styles.curvedPlatePath}
                 />
-                {/* Subtle White Specular Top Rim */}
+                {/* Specular Hairline Top Rim */}
                 <path
-                  d="M 10,19 Q 80,6 150,15"
+                  d="M 16,12 Q 80,5 144,12"
                   fill="none"
                   stroke="url(#rimGleam3)"
-                  strokeWidth="1.1"
+                  strokeWidth="0.9"
                   strokeLinecap="round"
                 />
-                {/* Curved Surface Glass Sheen */}
+                {/* Subtle Interior Glass Sheen Arc */}
                 <path
-                  d="M 14,35 Q 80,22 146,31"
+                  d="M 20,24 Q 80,17 140,24"
                   fill="none"
                   stroke="url(#sheenGrad3)"
-                  strokeWidth="1.0"
+                  strokeWidth="0.8"
                   strokeLinecap="round"
                 />
-                {/* Subtle HUD Latitude Guide Arc */}
+                {/* Subtle HUD Latitude Arc */}
                 <path
-                  d="M 14,56 Q 80,43 146,52"
+                  d="M 20,48 Q 80,41 140,48"
                   fill="none"
                   stroke="rgba(255,255,255,0.06)"
-                  strokeWidth="0.8"
+                  strokeWidth="0.7"
                   strokeDasharray="3 3"
                 />
               </svg>
@@ -578,62 +577,60 @@ export default function HeroSection() {
               }`}
               onClick={() => setActiveCard(activeCard === 'progress' ? null : 'progress')}
             >
-              {/* 3D Physically Curved Glass Plate SVG - Mirrored, NO GLOW */}
+              {/* Premium Visor Curved Plate SVG - Mirrored */}
               <svg className={styles.curvedPlateSvg} viewBox="0 0 160 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                  <linearGradient id="glassBg4" x1="100%" y1="0%" x2="0%" y2="0%">
-                    <stop offset="0%" stopColor="#1e1438" stopOpacity="0.85" />
-                    <stop offset="25%" stopColor="#120b24" stopOpacity="0.75" />
-                    <stop offset="50%" stopColor="#261a48" stopOpacity="0.7" />
-                    <stop offset="78%" stopColor="#0b0618" stopOpacity="0.85" />
+                  <linearGradient id="glassBg4" x1="100%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#1c1538" stopOpacity="0.88" />
+                    <stop offset="50%" stopColor="#100a24" stopOpacity="0.80" />
                     <stop offset="100%" stopColor="#04020a" stopOpacity="0.94" />
                   </linearGradient>
                   <linearGradient id="glassStroke4" x1="100%" y1="0%" x2="0%" y2="0%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.4" />
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.36" />
                     <stop offset="50%" stopColor="#ffffff" stopOpacity="0.16" />
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.08" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.06" />
                   </linearGradient>
                   <linearGradient id="rimGleam4" x1="100%" y1="0%" x2="0%" y2="0%">
                     <stop offset="0%" stopColor="#ffffff" stopOpacity="0.05" />
-                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.65" />
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.1" />
+                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.85" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.10" />
                   </linearGradient>
                   <linearGradient id="sheenGrad4" x1="100%" y1="0%" x2="0%" y2="0%">
                     <stop offset="0%" stopColor="#ffffff" stopOpacity="0.0" />
-                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.25" />
+                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.22" />
                     <stop offset="100%" stopColor="#ffffff" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
-                {/* Curved Panel Body - Mirrored */}
+                {/* Premium Curved Visor Panel */}
                 <path
-                  d="M 8,16 Q 80,7 152,20 C 158,22 158,114 152,116 L 152,116 Q 80,103 8,112 C 2,110 2,18 8,16 Z"
+                  d="M 16,12 Q 80,5 144,12 Q 156,13 156,24 L 156,106 Q 156,118 144,119 Q 80,112 16,119 Q 4,118 4,106 L 4,24 Q 4,13 16,12 Z"
                   fill="url(#glassBg4)"
                   stroke="url(#glassStroke4)"
-                  strokeWidth="1.2"
+                  strokeWidth="1.0"
                   className={styles.curvedPlatePath}
                 />
-                {/* Subtle White Specular Top Rim */}
+                {/* Specular Hairline Top Rim */}
                 <path
-                  d="M 10,15 Q 80,6 150,19"
+                  d="M 16,12 Q 80,5 144,12"
                   fill="none"
                   stroke="url(#rimGleam4)"
-                  strokeWidth="1.1"
+                  strokeWidth="0.9"
                   strokeLinecap="round"
                 />
-                {/* Curved Surface Glass Sheen */}
+                {/* Subtle Interior Glass Sheen Arc */}
                 <path
-                  d="M 14,31 Q 80,22 146,35"
+                  d="M 20,24 Q 80,17 140,24"
                   fill="none"
                   stroke="url(#sheenGrad4)"
-                  strokeWidth="1.0"
+                  strokeWidth="0.8"
                   strokeLinecap="round"
                 />
-                {/* Subtle HUD Latitude Guide Arc */}
+                {/* Subtle HUD Latitude Arc */}
                 <path
-                  d="M 14,54 Q 80,43 146,58"
+                  d="M 20,48 Q 80,41 140,48"
                   fill="none"
                   stroke="rgba(255,255,255,0.06)"
-                  strokeWidth="0.8"
+                  strokeWidth="0.7"
                   strokeDasharray="3 3"
                 />
               </svg>

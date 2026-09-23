@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Outfit, Space_Grotesk } from 'next/font/google';
+import { Outfit, Space_Grotesk, Cinzel } from 'next/font/google';
 import './globals.css';
 
 const outfit = Outfit({
@@ -11,6 +11,12 @@ const outfit = Outfit({
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
   variable: '--font-space',
+  display: 'swap',
+});
+
+const cinzel = Cinzel({
+  subsets: ['latin'],
+  variable: '--font-royal',
   display: 'swap',
 });
 
@@ -41,7 +47,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${outfit.variable} ${spaceGrotesk.variable}`}>
+    <html lang="en" className={`${outfit.variable} ${spaceGrotesk.variable} ${cinzel.variable}`}>
       <body>{children}</body>
     </html>
   );

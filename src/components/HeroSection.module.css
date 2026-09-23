@@ -49,18 +49,19 @@
 
 .vedikaTutorText {
   display: inline-block;
-  font-family: var(--font-space), -apple-system, sans-serif;
-  font-size: clamp(3.2rem, 5.5vw, 5.5rem);
-  font-weight: 900;
-  letter-spacing: -0.025em;
-  line-height: 1.02;
+  font-family: var(--font-royal), 'Cinzel', serif;
+  font-size: clamp(3rem, 5.2vw, 5.2rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.06;
   text-transform: uppercase;
   background: linear-gradient(
     90deg,
-    #38bdf8 0%,
-    #818cf8 25%,
-    #c084fc 50%,
-    #f472b6 75%,
+    #f8fafc 0%,
+    #38bdf8 20%,
+    #818cf8 42%,
+    #c084fc 66%,
+    #f472b6 88%,
     #38bdf8 100%
   );
   background-size: 250% 100%;
@@ -153,16 +154,16 @@
   transform-style: preserve-3d;
 }
 
-/* Space backdrop blended neatly into the page without box edges */
+/* Space backdrop: Earth horizon below in deep space */
 .spaceBackdrop {
   position: absolute;
-  inset: -6% -8% -6% -8%;
+  inset: -5% -8% -3% -8%;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.9;
+  opacity: 0.95;
   border-radius: 50%;
-  -webkit-mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, #000000 22%, rgba(0, 0, 0, 0.82) 46%, rgba(0, 0, 0, 0.3) 68%, transparent 88%);
-  mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, #000000 22%, rgba(0, 0, 0, 0.82) 46%, rgba(0, 0, 0, 0.3) 68%, transparent 88%);
+  -webkit-mask-image: radial-gradient(ellipse 66% 66% at 50% 50%, #000000 35%, rgba(0, 0, 0, 0.85) 60%, rgba(0, 0, 0, 0.25) 78%, transparent 92%);
+  mask-image: radial-gradient(ellipse 66% 66% at 50% 50%, #000000 35%, rgba(0, 0, 0, 0.85) 60%, rgba(0, 0, 0, 0.25) 78%, transparent 92%);
 }
 
 .spaceBackdrop::after {
@@ -170,7 +171,7 @@
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: radial-gradient(ellipse 65% 65% at 50% 50%, transparent 22%, rgba(2, 5, 12, 0.5) 55%, #02050c 86%);
+  background: radial-gradient(ellipse 66% 66% at 50% 50%, transparent 35%, rgba(2, 5, 12, 0.35) 60%, #02050c 88%);
   pointer-events: none;
 }
 
@@ -178,8 +179,20 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  object-position: center bottom;
   border-radius: 50%;
+}
+
+/* 3D Particle Swarm in stage behind the mascot */
+.stageParticlesWrapper {
+  position: absolute;
+  inset: -12% -12% -2% -12%;
+  z-index: 1;
+  pointer-events: none;
+  overflow: visible;
+  border-radius: 50%;
+  -webkit-mask-image: radial-gradient(ellipse 66% 66% at 50% 50%, #000000 40%, rgba(0, 0, 0, 0.8) 65%, transparent 90%);
+  mask-image: radial-gradient(ellipse 66% 66% at 50% 50%, #000000 40%, rgba(0, 0, 0, 0.8) 65%, transparent 90%);
 }
 
 /* Central Mascot Container: Perfectly holds both layered human & bot images */
@@ -301,8 +314,7 @@
   }
 }
 
-/* ========================================================= */
-/* 4 REAL GLASSMORPHISM FLOATING BOXES - 3D CURVED SPACE    */
+/* 4 PREMIUM GLASSMORPHISM FLOATING VISOR BOXES - 3D SPACE */
 /* ========================================================= */
 .glassCard {
   position: absolute;
@@ -310,9 +322,9 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 1.15rem 1.25rem 1.25rem 1.25rem;
-  min-height: 130px;
+  gap: 0.55rem;
+  padding: 1.15rem 1.25rem 1.2rem 1.25rem;
+  min-height: 128px;
   background: transparent !important;
   border: none !important;
   border-radius: 0 !important;
@@ -323,14 +335,14 @@
   transform-style: preserve-3d;
   backface-visibility: hidden;
   /* Pure realistic depth shadow - NO neon glow halo */
-  filter: drop-shadow(0 14px 34px rgba(0, 0, 0, 0.85));
+  filter: drop-shadow(0 16px 36px rgba(0, 0, 0, 0.85));
   transition: filter 0.3s ease;
   overflow: visible;
 }
 
 /* Hover: ZERO transform, clean subtle shadow adjustment - NO glow */
 .glassCard:hover {
-  filter: drop-shadow(0 16px 38px rgba(0, 0, 0, 0.92));
+  filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.92));
 }
 
 .glassCard:hover .curvedPlateSvg {
@@ -353,12 +365,12 @@
 }
 
 .activeCard {
-  filter: drop-shadow(0 16px 40px rgba(0, 0, 0, 0.95)) !important;
+  filter: drop-shadow(0 18px 44px rgba(0, 0, 0, 0.95)) !important;
 }
 
 .activeCard .curvedPlatePath {
-  stroke: rgba(255, 255, 255, 0.6) !important;
-  stroke-width: 1.8px !important;
+  stroke: rgba(255, 255, 255, 0.55) !important;
+  stroke-width: 1.5px !important;
   filter: none !important;
 }
 
@@ -377,14 +389,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   position: relative;
   z-index: 3;
   transform: translateZ(10px);
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
   box-shadow: none !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 /* ZERO transform on hover across all cards and inner elements */
@@ -394,56 +409,54 @@
 
 /* Curved Icon Box aligned to visor arc */
 .cardIconBoxLeft {
-  transform: rotate(-3.5deg) translateZ(10px);
-  border-radius: 12px 14px 8px 11px;
+  transform: rotate(-2.4deg) translateZ(10px);
 }
 
 .cardIconBoxRight {
-  transform: rotate(3.5deg) translateZ(10px);
-  border-radius: 14px 12px 11px 8px;
+  transform: rotate(2.4deg) translateZ(10px);
 }
 
 /* Curved Text Column aligned to visor arc */
 .cardTextCol {
   display: flex;
   flex-direction: column;
-  line-height: 1.25;
+  line-height: 1.22;
   position: relative;
   z-index: 3;
   transform: translateZ(8px);
 }
 
 .cardTextColLeft {
-  transform: rotate(-2.8deg) translateZ(8px);
+  transform: rotate(-2.2deg) translateZ(8px);
   transform-origin: left center;
 }
 
 .cardTextColRight {
-  transform: rotate(2.8deg) translateZ(8px);
+  transform: rotate(2.2deg) translateZ(8px);
   transform-origin: left center;
 }
 
 .curvedWordLine1 {
   display: inline-block;
-  transform: rotate(-1.2deg);
+  transform: rotate(-1deg);
   transform-origin: left center;
 }
 
 .curvedWordLine2 {
   display: inline-block;
-  transform: rotate(-0.6deg);
+  transform: rotate(-0.5deg);
   transform-origin: left center;
 }
 
 .curvedWordLine1Right {
   display: inline-block;
-  transform: rotate(1.2deg);
+  transform: rotate(1deg);
   transform-origin: left center;
 }
 
 .curvedWordLine2Right {
   display: inline-block;
-  transform: rotate(0.6deg);
+  transform: rotate(0.5deg);
   transform-origin: left center;
 }
 

@@ -9,6 +9,8 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 interface ParticlesBackgroundProps {
   count?: number;
   opacity?: number;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
 export class ParticlesSwarm {
@@ -22,7 +24,6 @@ export class ParticlesSwarm {
   dummy: THREE.Object3D;
   color: THREE.Color;
   target: THREE.Vector3;
-  pColor: THREE.Color;
   geometry: THREE.TetrahedronGeometry;
   material: THREE.MeshBasicMaterial;
   mesh: THREE.InstancedMesh;
@@ -55,22 +56,21 @@ export class ParticlesSwarm {
     this.renderer.setClearColor(0x000000, 0);
     this.container.appendChild(this.renderer.domElement);
 
-    // POST PROCESSING - subtle bloom
+    // POST PROCESSING - ethereal bloom
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.scene, this.camera));
     const bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 1.0, 0.4, 0.85);
-    bloomPass.strength = 1.1; // Subtle ethereal bloom
-    bloomPass.radius = 0.35;
-    bloomPass.threshold = 0.1;
+    bloomPass.strength = 1.35;
+    bloomPass.radius = 0.4;
+    bloomPass.threshold = 0.08;
     this.composer.addPass(bloomPass);
 
     // OBJECTS
     this.dummy = new THREE.Object3D();
     this.color = new THREE.Color();
     this.target = new THREE.Vector3();
-    this.pColor = new THREE.Color();
 
-    this.geometry = new THREE.TetrahedronGeometry(0.22);
+    this.geometry = new THREE.TetrahedronGeometry(0.24);
     this.material = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
     this.mesh = new THREE.InstancedMesh(this.geometry, this.material, this.count);
@@ -111,7 +111,6 @@ export class ParticlesSwarm {
     this.animationFrameId = requestAnimationFrame(this.animate);
     const time = this.clock.getElapsedTime() * this.speedMult;
 
-    // API Stubs & Parameters (hoisted outside inner loop for optimal 60fps)
     const PARAMS: Record<string, number> = { s: 50, v: 0.8, h: 1, r: 0.8, d: 1 };
     const addControl = (id: string, _l: string, _min: number, _max: number, val: number) => {
       return PARAMS[id] !== undefined ? PARAMS[id] : val;
@@ -133,7 +132,7 @@ export class ParticlesSwarm {
 
     for (let i = 0; i < this.count; i++) {
       const target = this.target;
-      const color = this.pColor;
+      const color = this.color;
 
       const lane = i % 10;
       const row = (i - lane) / 10;
@@ -189,17 +188,17 @@ export class ParticlesSwarm {
 
       const heatZone = 0.5 - 0.5 * ca;
       const powerZone = 0.5 + 0.5 * sa;
-      const returnZone = 0.5 - 0.5 * sa;
 
-      const energyHue = 0.02 + 0.045 * heatZone + 0.035 * powerZone + 0.025 * returnZone * r;
-      const dataHue = 0.52 + 0.04 * (0.5 + 0.5 * dn);
+      // Vedika signature palette: Electric Cyan + Amethyst Purple / Violet + Golden Sparkles
+      const energyHue = 0.73 + 0.08 * heatZone + 0.04 * powerZone; // Violet & Purple
+      const dataHue = 0.54 + 0.04 * (0.5 + 0.5 * dn); // Electric Sky / Cyan
 
       const hue = energyHue * energyMask + dataHue * dataMask;
-      const sat = energyMask * (0.82 + 0.15 * pulse) + dataMask * 0.9;
-      const light = energyMask * (0.28 + 0.22 * pulse) + dataMask * (0.42 + 0.12 * (0.5 + 0.5 * dn));
+      const sat = energyMask * (0.85 + 0.15 * pulse) + dataMask * 0.95;
+      const light = energyMask * (0.42 + 0.28 * pulse) + dataMask * (0.55 + 0.2 * (0.5 + 0.5 * dn));
 
       color.setHSL(
-        Math.max(0, Math.min(1, hue)),
+        Math.max(0, Math.min(1, hue % 1)),
         Math.max(0, Math.min(1, sat)),
         Math.max(0, Math.min(1, light))
       );
@@ -209,7 +208,7 @@ export class ParticlesSwarm {
       this.dummy.position.copy(this.positions[i]);
       this.dummy.updateMatrix();
       this.mesh.setMatrixAt(i, this.dummy.matrix);
-      this.mesh.setColorAt(i, this.pColor);
+      this.mesh.setColorAt(i, this.color);
     }
     this.mesh.instanceMatrix.needsUpdate = true;
     if (this.mesh.instanceColor) {
@@ -234,7 +233,12 @@ export class ParticlesSwarm {
   }
 }
 
-export default function ParticlesBackground({ count = 8000, opacity = 0.38 }: ParticlesBackgroundProps) {
+export default function ParticlesBackground({
+  count = 8000,
+  opacity = 0.7,
+  className,
+  style,
+}: ParticlesBackgroundProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -249,6 +253,7 @@ export default function ParticlesBackground({ count = 8000, opacity = 0.38 }: Pa
   return (
     <div
       ref={containerRef}
+      className={className}
       style={{
         position: 'absolute',
         inset: 0,
@@ -258,6 +263,7 @@ export default function ParticlesBackground({ count = 8000, opacity = 0.38 }: Pa
         zIndex: 0,
         opacity,
         overflow: 'hidden',
+        ...style,
       }}
     />
   );
