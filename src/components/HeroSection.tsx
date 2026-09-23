@@ -345,7 +345,7 @@ export default function HeroSection() {
               onClick={() => setActiveCard(activeCard === 'concepts' ? null : 'concepts')}
             >
               {/* 3D Physically Curved Glass Plate SVG */}
-              <svg className={styles.curvedPlateSvg} viewBox="0 0 160 96" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+              <svg className={styles.curvedPlateSvg} viewBox="0 0 160 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id="glassBg1" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="#1e2c56" stopOpacity="0.88" />
@@ -377,7 +377,7 @@ export default function HeroSection() {
                 </defs>
                 {/* Curved Panel Body */}
                 <path
-                  d="M 8,22 Q 80,8 152,18 C 158,20 158,76 152,78 L 152,78 Q 80,68 8,82 C 2,80 2,24 8,22 Z"
+                  d="M 8,20 Q 80,7 152,16 C 158,18 158,110 152,112 L 152,112 Q 80,103 8,116 C 2,114 2,22 8,20 Z"
                   fill="url(#glassBg1)"
                   stroke="url(#glassStroke1)"
                   strokeWidth="1.5"
@@ -385,7 +385,7 @@ export default function HeroSection() {
                 />
                 {/* Glowing Top Curved Rim */}
                 <path
-                  d="M 10,21 Q 80,7 150,17"
+                  d="M 10,19 Q 80,6 150,15"
                   fill="none"
                   stroke="url(#rimGleam1)"
                   strokeWidth="1.8"
@@ -393,7 +393,7 @@ export default function HeroSection() {
                 />
                 {/* Subtle Bottom Curved Rim */}
                 <path
-                  d="M 10,81 Q 80,67 150,77"
+                  d="M 10,115 Q 80,102 150,111"
                   fill="none"
                   stroke="url(#botGlow1)"
                   strokeWidth="1.2"
@@ -401,7 +401,7 @@ export default function HeroSection() {
                 />
                 {/* Curved Surface Gloss Sheen */}
                 <path
-                  d="M 14,33 Q 80,19 146,29"
+                  d="M 14,35 Q 80,22 146,31"
                   fill="none"
                   stroke="url(#sheenGrad1)"
                   strokeWidth="1.1"
@@ -427,7 +427,7 @@ export default function HeroSection() {
               onClick={() => setActiveCard(activeCard === 'practice' ? null : 'practice')}
             >
               {/* 3D Physically Curved Glass Plate SVG */}
-              <svg className={styles.curvedPlateSvg} viewBox="0 0 160 96" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+              <svg className={styles.curvedPlateSvg} viewBox="0 0 160 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id="glassBg2" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="#122a44" stopOpacity="0.88" />
@@ -459,7 +459,7 @@ export default function HeroSection() {
                 </defs>
                 {/* Curved Panel Body */}
                 <path
-                  d="M 8,22 Q 80,8 152,18 C 158,20 158,76 152,78 L 152,78 Q 80,68 8,82 C 2,80 2,24 8,22 Z"
+                  d="M 8,20 Q 80,7 152,16 C 158,18 158,110 152,112 L 152,112 Q 80,103 8,116 C 2,114 2,22 8,20 Z"
                   fill="url(#glassBg2)"
                   stroke="url(#glassStroke2)"
                   strokeWidth="1.5"
@@ -467,7 +467,7 @@ export default function HeroSection() {
                 />
                 {/* Glowing Top Curved Rim */}
                 <path
-                  d="M 10,21 Q 80,7 150,17"
+                  d="M 10,19 Q 80,6 150,15"
                   fill="none"
                   stroke="url(#rimGleam2)"
                   strokeWidth="1.8"
@@ -475,7 +475,7 @@ export default function HeroSection() {
                 />
                 {/* Subtle Bottom Curved Rim */}
                 <path
-                  d="M 10,81 Q 80,67 150,77"
+                  d="M 10,115 Q 80,102 150,111"
                   fill="none"
                   stroke="url(#botGlow2)"
                   strokeWidth="1.2"
@@ -483,7 +483,7 @@ export default function HeroSection() {
                 />
                 {/* Curved Surface Gloss Sheen */}
                 <path
-                  d="M 14,33 Q 80,19 146,29"
+                  d="M 14,35 Q 80,22 146,31"
                   fill="none"
                   stroke="url(#sheenGrad2)"
                   strokeWidth="1.1"
@@ -509,7 +509,7 @@ export default function HeroSection() {
               onClick={() => setActiveCard(activeCard === 'goals' ? null : 'goals')}
             >
               {/* 3D Physically Curved Glass Plate SVG */}
-              <svg className={styles.curvedPlateSvg} viewBox="0 0 160 96" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+              <svg className={styles.curvedPlateSvg} viewBox="0 0 160 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id="glassBg3" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="#2a1444" stopOpacity="0.88" />
@@ -541,7 +541,7 @@ export default function HeroSection() {
                 </defs>
                 {/* Curved Panel Body */}
                 <path
-                  d="M 8,22 Q 80,8 152,18 C 158,20 158,76 152,78 L 152,78 Q 80,68 8,82 C 2,80 2,24 8,22 Z"
+                  d="M 8,20 Q 80,7 152,16 C 158,18 158,110 152,112 L 152,112 Q 80,103 8,116 C 2,114 2,22 8,20 Z"
                   fill="url(#glassBg3)"
                   stroke="url(#glassStroke3)"
                   strokeWidth="1.5"
@@ -549,7 +549,7 @@ export default function HeroSection() {
                 />
                 {/* Glowing Top Curved Rim */}
                 <path
-                  d="M 10,21 Q 80,7 150,17"
+                  d="M 10,19 Q 80,6 150,15"
                   fill="none"
                   stroke="url(#rimGleam3)"
                   strokeWidth="1.8"
@@ -557,7 +557,7 @@ export default function HeroSection() {
                 />
                 {/* Subtle Bottom Curved Rim */}
                 <path
-                  d="M 10,81 Q 80,67 150,77"
+                  d="M 10,115 Q 80,102 150,111"
                   fill="none"
                   stroke="url(#botGlow3)"
                   strokeWidth="1.2"
@@ -565,7 +565,7 @@ export default function HeroSection() {
                 />
                 {/* Curved Surface Gloss Sheen */}
                 <path
-                  d="M 14,33 Q 80,19 146,29"
+                  d="M 14,35 Q 80,22 146,31"
                   fill="none"
                   stroke="url(#sheenGrad3)"
                   strokeWidth="1.1"
@@ -591,7 +591,7 @@ export default function HeroSection() {
               onClick={() => setActiveCard(activeCard === 'progress' ? null : 'progress')}
             >
               {/* 3D Physically Curved Glass Plate SVG (Right Mirror Curve) */}
-              <svg className={styles.curvedPlateSvg} viewBox="0 0 160 96" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+              <svg className={styles.curvedPlateSvg} viewBox="0 0 160 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id="glassBg4" x1="100%" y1="0%" x2="0%" y2="0%">
                     <stop offset="0%" stopColor="#221846" stopOpacity="0.88" />
@@ -623,7 +623,7 @@ export default function HeroSection() {
                 </defs>
                 {/* Curved Panel Body - Mirrored */}
                 <path
-                  d="M 8,18 Q 80,8 152,22 C 158,24 158,80 152,82 L 152,82 Q 80,68 8,78 C 2,76 2,20 8,18 Z"
+                  d="M 8,16 Q 80,7 152,20 C 158,22 158,114 152,116 L 152,116 Q 80,103 8,112 C 2,110 2,18 8,16 Z"
                   fill="url(#glassBg4)"
                   stroke="url(#glassStroke4)"
                   strokeWidth="1.5"
@@ -631,7 +631,7 @@ export default function HeroSection() {
                 />
                 {/* Glowing Top Curved Rim */}
                 <path
-                  d="M 10,17 Q 80,7 150,21"
+                  d="M 10,15 Q 80,6 150,19"
                   fill="none"
                   stroke="url(#rimGleam4)"
                   strokeWidth="1.8"
@@ -639,7 +639,7 @@ export default function HeroSection() {
                 />
                 {/* Subtle Bottom Curved Rim */}
                 <path
-                  d="M 10,77 Q 80,67 150,81"
+                  d="M 10,111 Q 80,102 150,115"
                   fill="none"
                   stroke="url(#botGlow4)"
                   strokeWidth="1.2"
@@ -647,7 +647,7 @@ export default function HeroSection() {
                 />
                 {/* Curved Surface Gloss Sheen */}
                 <path
-                  d="M 14,29 Q 80,19 146,33"
+                  d="M 14,31 Q 80,22 146,35"
                   fill="none"
                   stroke="url(#sheenGrad4)"
                   strokeWidth="1.1"
