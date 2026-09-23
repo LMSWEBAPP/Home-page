@@ -344,6 +344,71 @@ export default function HeroSection() {
               }`}
               onClick={() => setActiveCard(activeCard === 'concepts' ? null : 'concepts')}
             >
+              {/* 3D Physically Curved Glass Plate SVG */}
+              <svg className={styles.curvedPlateSvg} viewBox="0 0 160 96" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="glassBg1" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#1e2c56" stopOpacity="0.88" />
+                    <stop offset="25%" stopColor="#131e3d" stopOpacity="0.78" />
+                    <stop offset="50%" stopColor="#253c72" stopOpacity="0.74" />
+                    <stop offset="78%" stopColor="#0b132c" stopOpacity="0.88" />
+                    <stop offset="100%" stopColor="#040818" stopOpacity="0.96" />
+                  </linearGradient>
+                  <linearGradient id="glassStroke1" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.8" />
+                    <stop offset="45%" stopColor="#38bdf8" stopOpacity="0.7" />
+                    <stop offset="100%" stopColor="#818cf8" stopOpacity="0.4" />
+                  </linearGradient>
+                  <linearGradient id="rimGleam1" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.25" />
+                    <stop offset="48%" stopColor="#ffffff" stopOpacity="0.98" />
+                    <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.45" />
+                  </linearGradient>
+                  <linearGradient id="botGlow1" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.1" />
+                    <stop offset="50%" stopColor="#38bdf8" stopOpacity="0.5" />
+                    <stop offset="100%" stopColor="#818cf8" stopOpacity="0.15" />
+                  </linearGradient>
+                  <linearGradient id="sheenGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.0" />
+                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.45" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.0" />
+                  </linearGradient>
+                </defs>
+                {/* Curved Panel Body */}
+                <path
+                  d="M 8,22 Q 80,8 152,18 C 158,20 158,76 152,78 L 152,78 Q 80,68 8,82 C 2,80 2,24 8,22 Z"
+                  fill="url(#glassBg1)"
+                  stroke="url(#glassStroke1)"
+                  strokeWidth="1.5"
+                  className={styles.curvedPlatePath}
+                />
+                {/* Glowing Top Curved Rim */}
+                <path
+                  d="M 10,21 Q 80,7 150,17"
+                  fill="none"
+                  stroke="url(#rimGleam1)"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                />
+                {/* Subtle Bottom Curved Rim */}
+                <path
+                  d="M 10,81 Q 80,67 150,77"
+                  fill="none"
+                  stroke="url(#botGlow1)"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                />
+                {/* Curved Surface Gloss Sheen */}
+                <path
+                  d="M 14,33 Q 80,19 146,29"
+                  fill="none"
+                  stroke="url(#sheenGrad1)"
+                  strokeWidth="1.1"
+                  strokeLinecap="round"
+                />
+              </svg>
+
               <div className={`${styles.cardIconBox} ${styles.iconBoxCyan}`}>
                 <BookOpen size={20} className={styles.cyanIconSvg} />
               </div>
@@ -354,13 +419,78 @@ export default function HeroSection() {
               <div className={styles.cardShine}></div>
             </div>
 
-            {/* Box 2: Practice & Solve (Mid-Left, directly at pointing fingertip) */}
+            {/* Box 2: Practice & Solve (Mid-Left) */}
             <div
               className={`${styles.glassCard} ${styles.cardPracticeSolve} ${
                 activeCard === 'practice' ? styles.activeCard : ''
               }`}
               onClick={() => setActiveCard(activeCard === 'practice' ? null : 'practice')}
             >
+              {/* 3D Physically Curved Glass Plate SVG */}
+              <svg className={styles.curvedPlateSvg} viewBox="0 0 160 96" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="glassBg2" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#122a44" stopOpacity="0.88" />
+                    <stop offset="25%" stopColor="#0b1c30" stopOpacity="0.78" />
+                    <stop offset="50%" stopColor="#183c5e" stopOpacity="0.74" />
+                    <stop offset="78%" stopColor="#061222" stopOpacity="0.88" />
+                    <stop offset="100%" stopColor="#020812" stopOpacity="0.96" />
+                  </linearGradient>
+                  <linearGradient id="glassStroke2" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.8" />
+                    <stop offset="45%" stopColor="#06b6d4" stopOpacity="0.7" />
+                    <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.4" />
+                  </linearGradient>
+                  <linearGradient id="rimGleam2" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.25" />
+                    <stop offset="48%" stopColor="#ffffff" stopOpacity="0.98" />
+                    <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.45" />
+                  </linearGradient>
+                  <linearGradient id="botGlow2" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.1" />
+                    <stop offset="50%" stopColor="#06b6d4" stopOpacity="0.5" />
+                    <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.15" />
+                  </linearGradient>
+                  <linearGradient id="sheenGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.0" />
+                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.45" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.0" />
+                  </linearGradient>
+                </defs>
+                {/* Curved Panel Body */}
+                <path
+                  d="M 8,22 Q 80,8 152,18 C 158,20 158,76 152,78 L 152,78 Q 80,68 8,82 C 2,80 2,24 8,22 Z"
+                  fill="url(#glassBg2)"
+                  stroke="url(#glassStroke2)"
+                  strokeWidth="1.5"
+                  className={styles.curvedPlatePath}
+                />
+                {/* Glowing Top Curved Rim */}
+                <path
+                  d="M 10,21 Q 80,7 150,17"
+                  fill="none"
+                  stroke="url(#rimGleam2)"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                />
+                {/* Subtle Bottom Curved Rim */}
+                <path
+                  d="M 10,81 Q 80,67 150,77"
+                  fill="none"
+                  stroke="url(#botGlow2)"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                />
+                {/* Curved Surface Gloss Sheen */}
+                <path
+                  d="M 14,33 Q 80,19 146,29"
+                  fill="none"
+                  stroke="url(#sheenGrad2)"
+                  strokeWidth="1.1"
+                  strokeLinecap="round"
+                />
+              </svg>
+
               <div className={`${styles.cardIconBox} ${styles.iconBoxElectricCyan}`}>
                 <Lightbulb size={20} className={styles.cyanIconSvg} />
               </div>
@@ -378,6 +508,71 @@ export default function HeroSection() {
               }`}
               onClick={() => setActiveCard(activeCard === 'goals' ? null : 'goals')}
             >
+              {/* 3D Physically Curved Glass Plate SVG */}
+              <svg className={styles.curvedPlateSvg} viewBox="0 0 160 96" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="glassBg3" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#2a1444" stopOpacity="0.88" />
+                    <stop offset="25%" stopColor="#1c0b30" stopOpacity="0.78" />
+                    <stop offset="50%" stopColor="#38185c" stopOpacity="0.74" />
+                    <stop offset="78%" stopColor="#120622" stopOpacity="0.88" />
+                    <stop offset="100%" stopColor="#06020e" stopOpacity="0.96" />
+                  </linearGradient>
+                  <linearGradient id="glassStroke3" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.8" />
+                    <stop offset="45%" stopColor="#c084fc" stopOpacity="0.7" />
+                    <stop offset="100%" stopColor="#e879f9" stopOpacity="0.4" />
+                  </linearGradient>
+                  <linearGradient id="rimGleam3" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.25" />
+                    <stop offset="48%" stopColor="#ffffff" stopOpacity="0.98" />
+                    <stop offset="100%" stopColor="#c084fc" stopOpacity="0.45" />
+                  </linearGradient>
+                  <linearGradient id="botGlow3" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#c084fc" stopOpacity="0.1" />
+                    <stop offset="50%" stopColor="#c084fc" stopOpacity="0.5" />
+                    <stop offset="100%" stopColor="#e879f9" stopOpacity="0.15" />
+                  </linearGradient>
+                  <linearGradient id="sheenGrad3" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.0" />
+                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.45" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.0" />
+                  </linearGradient>
+                </defs>
+                {/* Curved Panel Body */}
+                <path
+                  d="M 8,22 Q 80,8 152,18 C 158,20 158,76 152,78 L 152,78 Q 80,68 8,82 C 2,80 2,24 8,22 Z"
+                  fill="url(#glassBg3)"
+                  stroke="url(#glassStroke3)"
+                  strokeWidth="1.5"
+                  className={styles.curvedPlatePath}
+                />
+                {/* Glowing Top Curved Rim */}
+                <path
+                  d="M 10,21 Q 80,7 150,17"
+                  fill="none"
+                  stroke="url(#rimGleam3)"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                />
+                {/* Subtle Bottom Curved Rim */}
+                <path
+                  d="M 10,81 Q 80,67 150,77"
+                  fill="none"
+                  stroke="url(#botGlow3)"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                />
+                {/* Curved Surface Gloss Sheen */}
+                <path
+                  d="M 14,33 Q 80,19 146,29"
+                  fill="none"
+                  stroke="url(#sheenGrad3)"
+                  strokeWidth="1.1"
+                  strokeLinecap="round"
+                />
+              </svg>
+
               <div className={`${styles.cardIconBox} ${styles.iconBoxPurple}`}>
                 <Target size={20} className={styles.purpleIconSvg} />
               </div>
@@ -395,6 +590,71 @@ export default function HeroSection() {
               }`}
               onClick={() => setActiveCard(activeCard === 'progress' ? null : 'progress')}
             >
+              {/* 3D Physically Curved Glass Plate SVG (Right Mirror Curve) */}
+              <svg className={styles.curvedPlateSvg} viewBox="0 0 160 96" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="glassBg4" x1="100%" y1="0%" x2="0%" y2="0%">
+                    <stop offset="0%" stopColor="#221846" stopOpacity="0.88" />
+                    <stop offset="25%" stopColor="#150e30" stopOpacity="0.78" />
+                    <stop offset="50%" stopColor="#2e205c" stopOpacity="0.74" />
+                    <stop offset="78%" stopColor="#0e0822" stopOpacity="0.88" />
+                    <stop offset="100%" stopColor="#04020e" stopOpacity="0.96" />
+                  </linearGradient>
+                  <linearGradient id="glassStroke4" x1="100%" y1="0%" x2="0%" y2="0%">
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.8" />
+                    <stop offset="45%" stopColor="#818cf8" stopOpacity="0.7" />
+                    <stop offset="100%" stopColor="#c084fc" stopOpacity="0.4" />
+                  </linearGradient>
+                  <linearGradient id="rimGleam4" x1="100%" y1="0%" x2="0%" y2="0%">
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.25" />
+                    <stop offset="48%" stopColor="#ffffff" stopOpacity="0.98" />
+                    <stop offset="100%" stopColor="#818cf8" stopOpacity="0.45" />
+                  </linearGradient>
+                  <linearGradient id="botGlow4" x1="100%" y1="0%" x2="0%" y2="0%">
+                    <stop offset="0%" stopColor="#818cf8" stopOpacity="0.1" />
+                    <stop offset="50%" stopColor="#818cf8" stopOpacity="0.5" />
+                    <stop offset="100%" stopColor="#c084fc" stopOpacity="0.15" />
+                  </linearGradient>
+                  <linearGradient id="sheenGrad4" x1="100%" y1="0%" x2="0%" y2="0%">
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.0" />
+                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.45" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.0" />
+                  </linearGradient>
+                </defs>
+                {/* Curved Panel Body - Mirrored */}
+                <path
+                  d="M 8,18 Q 80,8 152,22 C 158,24 158,80 152,82 L 152,82 Q 80,68 8,78 C 2,76 2,20 8,18 Z"
+                  fill="url(#glassBg4)"
+                  stroke="url(#glassStroke4)"
+                  strokeWidth="1.5"
+                  className={styles.curvedPlatePath}
+                />
+                {/* Glowing Top Curved Rim */}
+                <path
+                  d="M 10,17 Q 80,7 150,21"
+                  fill="none"
+                  stroke="url(#rimGleam4)"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                />
+                {/* Subtle Bottom Curved Rim */}
+                <path
+                  d="M 10,77 Q 80,67 150,81"
+                  fill="none"
+                  stroke="url(#botGlow4)"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                />
+                {/* Curved Surface Gloss Sheen */}
+                <path
+                  d="M 14,29 Q 80,19 146,33"
+                  fill="none"
+                  stroke="url(#sheenGrad4)"
+                  strokeWidth="1.1"
+                  strokeLinecap="round"
+                />
+              </svg>
+
               <div className={`${styles.cardIconBox} ${styles.iconBoxIndigo}`}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <rect x="3" y="14" width="4.5" height="7" rx="1.5" fill="url(#barG1)" />
