@@ -1,3 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Vollkorn:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap');
+@import url('https://db.onlinewebfonts.com/c/21b2809e6e69b9e96ed194863cd472a5?family=Calluna');
+@import url('https://db.onlinewebfonts.com/c/284402b44f3438c454c86266a898ca87?family=thinoo');
+
 :root {
   --bg-primary: #02050c;
   --bg-secondary: #060b18;
@@ -5,10 +9,33 @@
   --card-bg: rgba(12, 17, 32, 0.65);
   --card-border: rgba(255, 255, 255, 0.08);
 
-  --accent-cyan: #38bdf8;
-  --accent-blue: #60a5fa;
-  --accent-purple: #8b5cf6;
-  --accent-violet: #c084fc;
+  --color-black: #000;
+  --color-white: #fff;
+
+  /* Main & Sub Fonts per design specification */
+  --main-font: "Reforma 1918", 'Calluna', Georgia, serif;
+  --sub-font: "Poppins", 'thinoo', -apple-system, sans-serif;
+
+  /* Font roles */
+  --font-calluna: 'Calluna', Georgia, 'Times New Roman', serif;
+  --font-thinoo: 'thinoo', 'Poppins', -apple-system, sans-serif;
+  --font-vollkorn: 'Vollkorn', Georgia, serif;
+
+  /* 4 Lab Colors from the 4 Labs reference image: */
+  --color-lab-math: #a855f7;      /* Math Lab - Neon Purple */
+  --color-lab-physics: #00c2ff;   /* Physics Lab - Electric Cyan / Sky Blue */
+  --color-lab-chemistry: #00f298; /* Chemistry Lab - Neon Emerald Green */
+  --color-lab-biology: #ff9900;   /* Biology Lab - Warm Amber / Gold */
+
+  /* Golden Disco Dust Accent */
+  --color-disco-gold: #ffd700;
+  --color-disco-amber: #f59e0b;
+
+  --accent-cyan: #00c2ff;
+  --accent-blue: #38bdf8;
+  --accent-purple: #a855f7;
+  --accent-green: #00f298;
+  --accent-gold: #ff9900;
   
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
@@ -38,7 +65,7 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
-  font-family: var(--font-outfit), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: var(--sub-font), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -52,9 +79,10 @@ body::before {
   width: 100vw;
   height: 100vh;
   background: 
-    radial-gradient(circle at 15% 25%, rgba(56, 189, 248, 0.07) 0%, transparent 45%),
-    radial-gradient(circle at 75% 35%, rgba(139, 92, 246, 0.09) 0%, transparent 50%),
-    radial-gradient(circle at 85% 80%, rgba(56, 189, 248, 0.05) 0%, transparent 55%);
+    radial-gradient(circle at 15% 25%, rgba(0, 194, 255, 0.07) 0%, transparent 45%),
+    radial-gradient(circle at 75% 35%, rgba(168, 85, 247, 0.09) 0%, transparent 50%),
+    radial-gradient(circle at 85% 80%, rgba(0, 242, 152, 0.06) 0%, transparent 55%),
+    radial-gradient(circle at 35% 85%, rgba(255, 153, 0, 0.05) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
 }
@@ -69,11 +97,11 @@ body::after {
   height: 100vh;
   background-image: 
     radial-gradient(1px 1px at 10% 15%, rgba(255, 255, 255, 0.4), transparent),
-    radial-gradient(1.5px 1.5px at 25% 45%, rgba(56, 189, 248, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 25% 45%, rgba(0, 194, 255, 0.5), transparent),
     radial-gradient(1px 1px at 45% 10%, rgba(255, 255, 255, 0.3), transparent),
-    radial-gradient(2px 2px at 65% 20%, rgba(192, 132, 252, 0.5), transparent),
-    radial-gradient(1px 1px at 80% 50%, rgba(255, 255, 255, 0.4), transparent),
-    radial-gradient(1.5px 1.5px at 90% 15%, rgba(56, 189, 248, 0.6), transparent);
+    radial-gradient(2px 2px at 65% 20%, rgba(168, 85, 247, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 80% 50%, rgba(0, 242, 152, 0.4), transparent),
+    radial-gradient(1.5px 1.5px at 90% 15%, rgba(255, 153, 0, 0.5), transparent);
   background-size: 550px 550px;
   pointer-events: none;
   z-index: 0;

@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useReducer, useCallback } from 'react';
 import Image from 'next/image';
 import styles from './HeroSection.module.css';
-import { BookOpen, Lightbulb, Target } from 'lucide-react';
-import ParticlesBackground from './ParticlesBackground';
+import ParticlesBackground, { ParticleTransformProps } from './ParticlesBackground';
+import gsap from 'gsap';
+import { CustomEase } from 'gsap/CustomEase';
 
 interface TrailPoint {
   x: number;
@@ -15,21 +16,138 @@ interface TrailPoint {
   wobblePhase: number;
 }
 
+interface PhonemeSegment {
+  start: number;
+  end: number;
+  fromFrame: number;
+  toFrame: number;
+}
+
+// Maps speech timeline to smooth phoneme transitions matching the audio
+const PHONEME_SCHEDULE: PhonemeSegment[] = [
+  // "Curious" (0.0s - 1.1s)
+  { start: 0.00, end: 0.20, fromFrame: 0, toFrame: 0 }, // Rest
+  { start: 0.20, end: 0.50, fromFrame: 0, toFrame: 2 }, // "Cyu-" (Round Oh)
+  { start: 0.50, end: 0.80, fromFrame: 2, toFrame: 3 }, // "-ri-" (Wide Ee)
+  { start: 0.80, end: 1.10, fromFrame: 3, toFrame: 1 }, // "-ous" (Open Ah)
+
+  // "who's behind" (1.1s - 2.05s)
+  { start: 1.10, end: 1.40, fromFrame: 1, toFrame: 2 }, // "who's" (Round Oh)
+  { start: 1.40, end: 1.70, fromFrame: 2, toFrame: 4 }, // "be-" (Closed Mm)
+  { start: 1.70, end: 2.05, fromFrame: 4, toFrame: 1 }, // "-hind" (Open Ah)
+
+  // "my smile?" (2.05s - 2.85s)
+  { start: 2.05, end: 2.35, fromFrame: 1, toFrame: 4 }, // "my" (Closed Mm)
+  { start: 2.35, end: 2.85, fromFrame: 4, toFrame: 3 }, // "smile?" (Wide Ee)
+
+  // Natural brief breath pause (2.85s - 3.05s)
+  { start: 2.85, end: 3.05, fromFrame: 3, toFrame: 0 }, // Pause
+
+  // "Hover to reveal!" (3.05s - 3.65s)
+  { start: 3.05, end: 3.25, fromFrame: 0, toFrame: 1 }, // "Ho-" (Open Ah)
+  { start: 3.25, end: 3.45, fromFrame: 1, toFrame: 2 }, // "to" (Round Oh)
+  { start: 3.45, end: 3.65, fromFrame: 2, toFrame: 5 }, // "reveal!" (Accent Smile)
+];
+
+function getMouthBlend(t: number): { fromFrame: number; toFrame: number; weight: number } {
+  if (t <= 0 || t >= 3.65) return { fromFrame: 0, toFrame: 0, weight: 0 };
+
+  for (const seg of PHONEME_SCHEDULE) {
+    if (t >= seg.start && t < seg.end) {
+      const p = (t - seg.start) / (seg.end - seg.start);
+      // Smooth cosine ease for organic muscle transition
+      const weight = 0.5 - 0.5 * Math.cos(Math.PI * p);
+      return { fromFrame: seg.fromFrame, toFrame: seg.toFrame, weight };
+    }
+  }
+
+  return { fromFrame: 0, toFrame: 0, weight: 0 };
+}
+
+// Consolidated, high-performance Reducer state
+interface HeroState {
+  mounted: boolean;
+  imagesLoaded: boolean;
+  cursorInStage: boolean;
+  stageCursorPos: { x: number; y: number };
+  revealUnlocked: boolean;
+  dialogueSec: number;
+}
+
+type HeroAction =
+  | { type: 'MOUNT' }
+  | { type: 'IMAGES_LOADED' }
+  | { type: 'SET_CURSOR_POS'; payload: { x: number; y: number } }
+  | { type: 'CURSOR_ENTER' }
+  | { type: 'CURSOR_LEAVE' }
+  | { type: 'SET_DIALOGUE_SEC'; payload: number }
+  | { type: 'UNLOCK_REVEAL' }
+  | { type: 'RESTART_SPEECH' };
+
+const initialHeroState: HeroState = {
+  mounted: false,
+  imagesLoaded: false,
+  cursorInStage: false,
+  stageCursorPos: { x: 0, y: 0 },
+  revealUnlocked: false,
+  dialogueSec: 0,
+};
+
+function heroReducer(state: HeroState, action: HeroAction): HeroState {
+  switch (action.type) {
+    case 'MOUNT':
+      return { ...state, mounted: true };
+    case 'IMAGES_LOADED':
+      return { ...state, imagesLoaded: true };
+    case 'SET_CURSOR_POS':
+      return { ...state, stageCursorPos: action.payload };
+    case 'CURSOR_ENTER':
+      return { ...state, cursorInStage: true };
+    case 'CURSOR_LEAVE':
+      return { ...state, cursorInStage: false };
+    case 'SET_DIALOGUE_SEC':
+      // Prevent redundant re-renders on sub-second changes
+      if (Math.floor(state.dialogueSec) === Math.floor(action.payload)) {
+        return state;
+      }
+      return { ...state, dialogueSec: action.payload };
+    case 'UNLOCK_REVEAL':
+      return { ...state, revealUnlocked: true, dialogueSec: 3.65 };
+    case 'RESTART_SPEECH':
+      return { ...state, revealUnlocked: false, dialogueSec: 0 };
+    default:
+      return state;
+  }
+}
+
 export default function HeroSection() {
-  const [mounted, setMounted] = useState(false);
+  const [state, dispatch] = useReducer(heroReducer, initialHeroState);
+  const { mounted, imagesLoaded, cursorInStage, stageCursorPos, revealUnlocked, dialogueSec } = state;
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const mascotRef = useRef<HTMLDivElement>(null);
   const humanImgRef = useRef<HTMLImageElement | null>(null);
+  const spriteSheetRef = useRef<HTMLImageElement | null>(null);
 
-  const [imagesLoaded, setImagesLoaded] = useState(false);
-  const [cursorInStage, setCursorInStage] = useState(false);
-  const [stageCursorPos, setStageCursorPos] = useState({ x: 0, y: 0 });
-  const [activeCard, setActiveCard] = useState<string | null>(null);
+  const revealUnlockedRef = useRef(false);
+  const speechTimeRef = useRef(0);
+  const speechStartTimeRef = useRef<number | null>(null);
 
-  // Fluid reveal parameters (faster skin restore fallback)
-  const FIXED_RADIUS = 44;
-  const DECAY_RATE = 0.038;
+  // Locked particle transform coordinates (tuned and finalized)
+  const LOCKED_PARTICLES: ParticleTransformProps = {
+    posX: 6,
+    posY: 15,
+    posZ: -31,
+    scale: 1,
+    rotX: 115,
+    rotY: 5,
+    rotZ: -40,
+  };
+
+  // Fluid reveal parameters - organic radius and natural skin restore
+  const FIXED_RADIUS = 28;
+  const DECAY_RATE = 0.055;
 
   const trailRef = useRef<TrailPoint[]>([]);
   const lastMascotPosRef = useRef<{ x: number; y: number } | null>(null);
@@ -38,27 +156,138 @@ export default function HeroSection() {
   const cursorInMascotRef = useRef(false);
   const mascotPosRef = useRef({ x: 0, y: 0 });
 
-  useEffect(() => {
-    setMounted(true);
+  // High-fidelity natural child voice audio player
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const hasStartedAudioRef = useRef(false);
+
+  const playKidVoice = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    if (!audioRef.current) {
+      const audio = new window.Audio('/vedika-kid-voice.mp3');
+      audio.preload = 'auto';
+      audioRef.current = audio;
+    }
+
+    const audio = audioRef.current;
+    audio.currentTime = 0;
+    speechStartTimeRef.current = performance.now();
+    revealUnlockedRef.current = false;
+    dispatch({ type: 'RESTART_SPEECH' });
+
+    audio.play()
+      .then(() => {
+        hasStartedAudioRef.current = true;
+      })
+      .catch((err) => {
+        console.log('Audio autoplay waiting for user interaction:', err);
+      });
+
+    audio.onended = () => {
+      revealUnlockedRef.current = true;
+      dispatch({ type: 'UNLOCK_REVEAL' });
+    };
   }, []);
 
-  // Preload top human student image
+  useEffect(() => {
+    dispatch({ type: 'MOUNT' });
+  }, []);
+
+  // GSAP Title and Elements Animation matching the reference specification
   useEffect(() => {
     if (!mounted) return;
+
+    try {
+      gsap.registerPlugin(CustomEase);
+      const customEaseIn = CustomEase.create('custom-ease-in', '0.52, 0.00, 0.48, 1.00');
+      const fourtyFrames = 1.3333333;
+      const fiftyFrames = 1.66666;
+      const twoFrames = 0.666666;
+      const fourFrames = 0.133333;
+      const sixFrames = 0.2;
+
+      const ve = document.querySelector('#ve span');
+      const di = document.querySelector('#di span');
+      const ka = document.querySelector('#ka span');
+      const ai = document.querySelector('#ai span');
+      const tu = document.querySelector('#tu span');
+      const tor = document.querySelector('#tor span');
+      const titleLead = document.querySelector(`.${styles.titleLead}`);
+      const titleSubline = document.querySelector(`.${styles.titleSubline}`);
+      const desc = document.querySelector(`.${styles.description}`);
+
+      const timeline = gsap.timeline();
+
+      if (titleLead) {
+        timeline.fromTo(titleLead, { y: '-0.5rem', autoAlpha: 0 }, { y: '0rem', autoAlpha: 1, duration: fourtyFrames, ease: customEaseIn }, 0);
+      }
+      if (ve) {
+        timeline.fromTo(ve, { x: '2.7rem' }, { x: '0rem', duration: fiftyFrames, ease: customEaseIn }, 0);
+      }
+      if (di) {
+        timeline.fromTo(di, { x: '-2.0rem' }, { x: '0rem', duration: fiftyFrames, ease: customEaseIn }, fourFrames);
+      }
+      if (ka) {
+        timeline.fromTo(ka, { x: '2.1rem' }, { x: '0rem', duration: fiftyFrames, ease: customEaseIn }, twoFrames);
+      }
+      if (ai) {
+        timeline.fromTo(ai, { x: '-2.5rem' }, { x: '0rem', duration: fiftyFrames, ease: customEaseIn }, twoFrames);
+      }
+      if (tu) {
+        timeline.fromTo(tu, { x: '2.5rem' }, { x: '0rem', duration: fiftyFrames, ease: customEaseIn }, fourFrames);
+      }
+      if (tor) {
+        timeline.fromTo(tor, { x: '-3.2rem' }, { x: '0rem', duration: fiftyFrames, ease: customEaseIn }, twoFrames);
+      }
+      if (titleSubline) {
+        timeline.fromTo(titleSubline, { y: '0.4rem', autoAlpha: 0 }, { y: '0rem', autoAlpha: 1, duration: fourtyFrames, ease: customEaseIn }, twoFrames);
+      }
+      if (desc) {
+        timeline.fromTo(desc, { y: '0.4rem', autoAlpha: 0 }, { y: '0rem', autoAlpha: 1, duration: fourtyFrames, ease: customEaseIn }, sixFrames);
+      }
+    } catch (err) {
+      console.warn('GSAP animation error:', err);
+    }
+  }, [mounted]);
+
+  // Preload top human student image & talking sprite sheet
+  useEffect(() => {
+    if (!mounted) return;
+
+    let loaded = 0;
+    const checkAllLoaded = () => {
+      loaded++;
+      if (loaded >= 2) {
+        dispatch({ type: 'IMAGES_LOADED' });
+      }
+    };
 
     const humanImg = new window.Image();
     humanImg.src = '/vedika-human-clean.png';
     humanImg.onload = () => {
       humanImgRef.current = humanImg;
-      setImagesLoaded(true);
+      checkAllLoaded();
+    };
+
+    const spriteSheet = new window.Image();
+    spriteSheet.src = '/vedika-human-talking-spritesheet.png';
+    spriteSheet.onload = () => {
+      spriteSheetRef.current = spriteSheet;
+      checkAllLoaded();
     };
 
     return () => {
       humanImgRef.current = null;
+      spriteSheetRef.current = null;
     };
   }, [mounted]);
 
-  // Canvas animation and fluid reveal loop
+  // Play audio when images are loaded
+  useEffect(() => {
+    if (!imagesLoaded) return;
+    playKidVoice();
+  }, [imagesLoaded, playKidVoice]);
+
+  // Canvas animation, smooth continuous talking viseme morphing, and fluid reveal loop
   useEffect(() => {
     if (!mounted || !imagesLoaded) return;
     const canvas = canvasRef.current;
@@ -80,8 +309,25 @@ export default function HeroSection() {
     handleResize();
     window.addEventListener('resize', handleResize);
 
-    const renderLoop = () => {
+    const SPEECH_DURATION = 3.65;
+
+    const renderLoop = (timestamp: number) => {
       timeRef.current += 0.04;
+      if (!speechStartTimeRef.current) {
+        speechStartTimeRef.current = timestamp;
+      }
+
+      // Track speech progress synchronized with audio
+      const elapsedSpeechSec = (timestamp - speechStartTimeRef.current) / 1000;
+      speechTimeRef.current = elapsedSpeechSec;
+
+      if (elapsedSpeechSec < SPEECH_DURATION) {
+        dispatch({ type: 'SET_DIALOGUE_SEC', payload: elapsedSpeechSec });
+      } else if (!revealUnlockedRef.current) {
+        revealUnlockedRef.current = true;
+        dispatch({ type: 'UNLOCK_REVEAL' });
+      }
+
       if (!mascot) return;
       const rect = mascot.getBoundingClientRect();
       const w = rect.width;
@@ -89,83 +335,123 @@ export default function HeroSection() {
 
       ctx.clearRect(0, 0, w, h);
 
-      // 1. Draw top human student layer (100% visible by default)
-      if (humanImgRef.current) {
+      // 1. Draw top human student layer
+      // During speech, perform silky-smooth continuous alpha-blended morphing between visemes!
+      const isTalking = elapsedSpeechSec < SPEECH_DURATION;
+      if (isTalking && spriteSheetRef.current) {
+        const { fromFrame, toFrame, weight } = getMouthBlend(elapsedSpeechSec);
+        const frameW = 448;
+        const frameH = 600;
+
+        // Base frame
+        const col1 = fromFrame % 3;
+        const row1 = Math.floor(fromFrame / 3);
+        ctx.drawImage(
+          spriteSheetRef.current,
+          col1 * frameW,
+          row1 * frameH,
+          frameW,
+          frameH,
+          0,
+          0,
+          w,
+          h
+        );
+
+        // Interpolated target frame smoothly cross-faded with cosine easing
+        if (weight > 0.01 && fromFrame !== toFrame) {
+          ctx.save();
+          ctx.globalAlpha = weight;
+          const col2 = toFrame % 3;
+          const row2 = Math.floor(toFrame / 3);
+          ctx.drawImage(
+            spriteSheetRef.current,
+            col2 * frameW,
+            row2 * frameH,
+            frameW,
+            frameH,
+            0,
+            0,
+            w,
+            h
+          );
+          ctx.restore();
+        }
+      } else if (humanImgRef.current) {
         ctx.drawImage(humanImgRef.current, 0, 0, w, h);
       }
 
-      // 2. Fluid destination-out erasure to reveal the underlying bot seamlessly
-      ctx.globalCompositeOperation = 'destination-out';
+      // 2. Fluid reveal erasure ONLY enabled after the dialogue completes!
+      if (revealUnlockedRef.current) {
+        ctx.globalCompositeOperation = 'destination-out';
 
-      // 2a. Active focus aperture directly under cursor when hovering over the mascot
-      if (cursorInMascotRef.current) {
-        const mx = mascotPosRef.current.x;
-        const my = mascotPosRef.current.y;
-        const activeR = FIXED_RADIUS * 1.05;
+        // 2a. Active focus aperture directly under cursor when hovering over mascot
+        if (cursorInMascotRef.current) {
+          const mx = mascotPosRef.current.x;
+          const my = mascotPosRef.current.y;
+          const activeR = FIXED_RADIUS * 1.05;
 
-        const activeGrad = ctx.createRadialGradient(mx, my, activeR * 0.1, mx, my, activeR * 1.15);
-        activeGrad.addColorStop(0, 'rgba(0, 0, 0, 1)');
-        activeGrad.addColorStop(0.65, 'rgba(0, 0, 0, 0.88)');
-        activeGrad.addColorStop(0.92, 'rgba(0, 0, 0, 0.3)');
-        activeGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+          const activeGrad = ctx.createRadialGradient(mx, my, activeR * 0.1, mx, my, activeR * 1.15);
+          activeGrad.addColorStop(0, 'rgba(0, 0, 0, 1)');
+          activeGrad.addColorStop(0.65, 'rgba(0, 0, 0, 0.88)');
+          activeGrad.addColorStop(0.92, 'rgba(0, 0, 0, 0.3)');
+          activeGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
 
-        ctx.fillStyle = activeGrad;
-        ctx.beginPath();
-        ctx.arc(mx, my, activeR * 1.15, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      // 2b. Lingering fluid organic wave trail points
-      const points = trailRef.current;
-      for (let i = points.length - 1; i >= 0; i--) {
-        const pt = points[i];
-
-        // Sinusoidal organic fluid contour
-        ctx.beginPath();
-        const steps = 18;
-        const baseR = pt.radius;
-        const timeOffset = timeRef.current * 1.5 + pt.wobblePhase;
-
-        for (let j = 0; j <= steps; j++) {
-          const theta = (j / steps) * Math.PI * 2;
-          const wave =
-            Math.sin(theta * 3 + timeOffset) * 0.14 +
-            Math.cos(theta * 5 - timeOffset * 0.8) * 0.1;
-          const r = baseR * (1 + wave);
-          const px = pt.x + Math.cos(theta) * r;
-          const py = pt.y + Math.sin(theta) * r;
-
-          if (j === 0) ctx.moveTo(px, py);
-          else ctx.lineTo(px, py);
+          ctx.fillStyle = activeGrad;
+          ctx.beginPath();
+          ctx.arc(mx, my, activeR * 1.15, 0, Math.PI * 2);
+          ctx.fill();
         }
-        ctx.closePath();
 
-        // Soft fluid radial gradient for seamless transition
-        const grad = ctx.createRadialGradient(
-          pt.x,
-          pt.y,
-          Math.max(0, baseR * 0.1),
-          pt.x,
-          pt.y,
-          baseR * 1.2
-        );
-        grad.addColorStop(0, `rgba(0, 0, 0, ${Math.min(1, pt.alpha)})`);
-        grad.addColorStop(0.7, `rgba(0, 0, 0, ${Math.min(1, pt.alpha * 0.85)})`);
-        grad.addColorStop(0.95, `rgba(0, 0, 0, ${Math.min(1, pt.alpha * 0.3)})`);
-        grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        // 2b. Lingering fluid organic wave trail points
+        const points = trailRef.current;
+        for (let i = points.length - 1; i >= 0; i--) {
+          const pt = points[i];
 
-        ctx.fillStyle = grad;
-        ctx.fill();
+          ctx.beginPath();
+          const steps = 18;
+          const baseR = pt.radius;
+          const timeOffset = timeRef.current * 1.5 + pt.wobblePhase;
 
-        // Smoothly dissolve back to human layer
-        pt.alpha -= pt.decay;
-        pt.radius += 0.08;
-        if (pt.alpha <= 0) {
-          points.splice(i, 1);
+          for (let j = 0; j <= steps; j++) {
+            const theta = (j / steps) * Math.PI * 2;
+            const wave =
+              Math.sin(theta * 3 + timeOffset) * 0.14 +
+              Math.cos(theta * 5 - timeOffset * 0.8) * 0.1;
+            const r = baseR * (1 + wave);
+            const px = pt.x + Math.cos(theta) * r;
+            const py = pt.y + Math.sin(theta) * r;
+
+            if (j === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+          }
+          ctx.closePath();
+
+          const grad = ctx.createRadialGradient(
+            pt.x,
+            pt.y,
+            Math.max(0, baseR * 0.1),
+            pt.x,
+            pt.y,
+            baseR * 1.2
+          );
+          grad.addColorStop(0, `rgba(0, 0, 0, ${Math.min(1, pt.alpha)})`);
+          grad.addColorStop(0.7, `rgba(0, 0, 0, ${Math.min(1, pt.alpha * 0.85)})`);
+          grad.addColorStop(0.95, `rgba(0, 0, 0, ${Math.min(1, pt.alpha * 0.3)})`);
+          grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+          ctx.fillStyle = grad;
+          ctx.fill();
+
+          pt.alpha -= pt.decay;
+          pt.radius += 0.05;
+          if (pt.alpha <= 0) {
+            points.splice(i, 1);
+          }
         }
-      }
 
-      ctx.globalCompositeOperation = 'source-over';
+        ctx.globalCompositeOperation = 'source-over';
+      }
 
       animFrameIdRef.current = requestAnimationFrame(renderLoop);
     };
@@ -178,13 +464,13 @@ export default function HeroSection() {
     };
   }, [mounted, imagesLoaded]);
 
-  // Pointer movement tracking with fluid interpolation
-  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+  // Pointer movement tracking
+  const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (!stageRef.current) return;
     const stageRect = stageRef.current.getBoundingClientRect();
     const sx = e.clientX - stageRect.left;
     const sy = e.clientY - stageRect.top;
-    setStageCursorPos({ x: sx, y: sy });
+    dispatch({ type: 'SET_CURSOR_POS', payload: { x: sx, y: sy } });
 
     if (!mascotRef.current) return;
     const mascotRect = mascotRef.current.getBoundingClientRect();
@@ -199,6 +485,9 @@ export default function HeroSection() {
 
     cursorInMascotRef.current = isInside;
     mascotPosRef.current = { x: mx, y: my };
+
+    // Before dialogue finishes, DO NOT push reveal points!
+    if (!revealUnlockedRef.current) return;
 
     if (!isInside) {
       lastMascotPosRef.current = null;
@@ -221,7 +510,7 @@ export default function HeroSection() {
     const prev = lastMascotPosRef.current;
     const dist = Math.hypot(mx - prev.x, my - prev.y);
 
-    const stepDist = 8;
+    const stepDist = 6;
     const steps = Math.max(1, Math.floor(dist / stepDist));
 
     for (let i = 1; i <= steps; i++) {
@@ -244,31 +533,48 @@ export default function HeroSection() {
     }
 
     lastMascotPosRef.current = { x: mx, y: my };
-  };
+  }, [FIXED_RADIUS, DECAY_RATE]);
 
-  const handlePointerEnter = () => {
-    setCursorInStage(true);
-  };
+  const handlePointerEnter = useCallback(() => {
+    dispatch({ type: 'CURSOR_ENTER' });
+    // If browser blocked initial autoplay, trigger audio on first interaction
+    if (!hasStartedAudioRef.current) {
+      playKidVoice();
+    }
+  }, [playKidVoice]);
 
-  const handlePointerLeave = () => {
-    setCursorInStage(false);
+  const handlePointerLeave = useCallback(() => {
+    dispatch({ type: 'CURSOR_LEAVE' });
     cursorInMascotRef.current = false;
     lastMascotPosRef.current = null;
-  };
+  }, []);
 
   return (
     <section className={styles.heroSection}>
       <div className={styles.container}>
         {/* Left Content Column */}
         <div className={styles.contentCol}>
-          {/* Headline - Prioritising VEDIKA AI TUTOR with royal typography */}
-          <h1 className={styles.mainTitle}>
+          {/* Headline - Paired horizontal animation: VEDIKA & AI TUTOR with converging syllables & multi-color flow */}
+          <div className={styles.titleBlock}>
             <span className={styles.titleLead}>MEET YOUR PERSONAL</span>
-            <span className={styles.vedikaTutorText}>VEDIKA AI TUTOR</span>
+            <h1 className={styles.titleH1}>
+              {/* Line 1: VEDIKA - converging syllables */}
+              <div className={styles.titleRow} id="titleRow1">
+                <div className={styles.titleChartsCont} id="ve"><span>Ve</span></div>
+                <div className={styles.titleChartsCont} id="di"><span>di</span></div>
+                <div className={styles.titleChartsCont} id="ka"><span>ka</span></div>
+              </div>
+              {/* Line 2: AI TUTOR - converging syllables */}
+              <div className={`${styles.titleRow} ${styles.titleRow2}`} id="titleRow2">
+                <div className={styles.titleChartsCont} id="ai"><span>AI</span></div>
+                <div className={styles.titleChartsCont} id="tu"><span>Tu</span></div>
+                <div className={styles.titleChartsCont} id="tor"><span>tor</span></div>
+              </div>
+            </h1>
             <span className={styles.titleSubline}>Learn Smarter. Go Further.</span>
-          </h1>
+          </div>
 
-          {/* Subtitle - Clean & Impactful */}
+          {/* Subtitle - Vollkorn Simple Font */}
           <p className={styles.description}>
             Personalized intelligence and real-time concept mastery &mdash; built for every curious mind.
           </p>
@@ -283,7 +589,7 @@ export default function HeroSection() {
             onPointerEnter={handlePointerEnter}
             onPointerLeave={handlePointerLeave}
           >
-            {/* Space Backdrop: Clean Earth Horizon below in deep space (no striped lines) */}
+            {/* Space Backdrop: Clean Earth Horizon with smooth edge feathering into deep space */}
             <div className={styles.spaceBackdrop}>
               <Image
                 src="/vedika_earth_backdrop.jpg"
@@ -294,15 +600,22 @@ export default function HeroSection() {
               />
             </div>
 
-            {/* Glowing 3D Particle Swarm in place of the striped lines behind the mascot */}
+            {/* Glowing 4-Lab Colors Aura Backplate */}
+            <div className={styles.portalAuraGlow} />
+
+            {/* Heavy Multi-Shell Particle Rings with Golden Disco Dust Effect */}
             <div className={styles.stageParticlesWrapper}>
-              <ParticlesBackground count={7500} opacity={0.78} />
+              <ParticlesBackground
+                count={13000}
+                opacity={0.92}
+                {...LOCKED_PARTICLES}
+              />
             </div>
 
             {/* Central Mascot Container: Perfectly aligned Human & Bot */}
             <div ref={mascotRef} className={styles.mascotContainer}>
-              {/* Layer 1 (Underneath): Vedika AI Bot Companion (fitted & masked) */}
-              <div className={styles.innerRobotLayer}>
+              {/* Layer 1 (Underneath): Vedika AI Bot Companion (HIDDEN until reveal is enabled!) */}
+              <div className={`${styles.innerRobotLayer} ${revealUnlocked ? styles.robotLayerActive : styles.robotLayerHidden}`}>
                 <Image
                   src="/vedika-bot-fitted.png"
                   alt="Vedika AI Bot Companion"
@@ -312,7 +625,18 @@ export default function HeroSection() {
                 />
               </div>
 
-              {/* Layer 2 (On Top): Human Student Canvas with fluid hover reveal */}
+              {/* Base Fallback Kid Layer: ALWAYS visible on page load/reload until canvas paints */}
+              <div className={`${styles.baseHumanFallback} ${imagesLoaded ? styles.baseHumanFallbackReady : ''}`}>
+                <Image
+                  src="/vedika-human-clean.png"
+                  alt="Vedika Student"
+                  fill
+                  priority
+                  className={styles.humanFallbackImg}
+                />
+              </div>
+
+              {/* Layer 2 (On Top): Human Student Canvas with talking visemes & fluid hover reveal */}
               <canvas ref={canvasRef} className={styles.sceneCanvas} />
             </div>
 
@@ -328,337 +652,41 @@ export default function HeroSection() {
               <div className={styles.pointerCore}></div>
             </div>
 
-            {/* Idle Interaction Hint */}
+            {/* Interactive Reveal Hint Badge with Kid's Speaking Dialogue & Replay */}
             <div
-              className={styles.idleHint}
+              onClick={playKidVoice}
+              className={`${styles.idleHint} ${!revealUnlocked ? styles.idleHintLocked : styles.idleHintActive}`}
               style={{ opacity: cursorInStage ? 0 : 1 }}
+              role="button"
+              tabIndex={0}
+              title="Click to hear Vedika's voice!"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={styles.idleHintIcon}>
-                <path d="M12 0L14.4 9.6L24 12L14.4 14.4L12 24L9.6 14.4L0 12L9.6 9.6L12 0Z" fill="currentColor"/>
-              </svg>
-              <span>Glide cursor over Vedika to reveal AI Bot</span>
-            </div>
-
-            {/* ========================================================= */}
-            {/* 4 PREMIUM CURVED GLASSMORPHISM FLOATING VISOR CARDS      */}
-            {/* ========================================================= */}
-
-            {/* Box 1: Learn Concepts (Top-Left) */}
-            <div
-              className={`${styles.glassCard} ${styles.cardLearnConcepts} ${
-                activeCard === 'concepts' ? styles.activeCard : ''
-              }`}
-              onClick={() => setActiveCard(activeCard === 'concepts' ? null : 'concepts')}
-            >
-              {/* Premium Visor Curved Plate SVG */}
-              <svg className={styles.curvedPlateSvg} viewBox="0 0 160 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <linearGradient id="glassBg1" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#141f38" stopOpacity="0.88" />
-                    <stop offset="50%" stopColor="#0a1224" stopOpacity="0.80" />
-                    <stop offset="100%" stopColor="#030612" stopOpacity="0.94" />
-                  </linearGradient>
-                  <linearGradient id="glassStroke1" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.36" />
-                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.16" />
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.06" />
-                  </linearGradient>
-                  <linearGradient id="rimGleam1" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.05" />
-                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.85" />
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.10" />
-                  </linearGradient>
-                  <linearGradient id="sheenGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.0" />
-                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.22" />
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.0" />
-                  </linearGradient>
-                </defs>
-                {/* Premium Curved Visor Panel */}
-                <path
-                  d="M 16,12 Q 80,5 144,12 Q 156,13 156,24 L 156,106 Q 156,118 144,119 Q 80,112 16,119 Q 4,118 4,106 L 4,24 Q 4,13 16,12 Z"
-                  fill="url(#glassBg1)"
-                  stroke="url(#glassStroke1)"
-                  strokeWidth="1.0"
-                  className={styles.curvedPlatePath}
-                />
-                {/* Specular Hairline Top Rim */}
-                <path
-                  d="M 16,12 Q 80,5 144,12"
-                  fill="none"
-                  stroke="url(#rimGleam1)"
-                  strokeWidth="0.9"
-                  strokeLinecap="round"
-                />
-                {/* Subtle Interior Glass Sheen Arc */}
-                <path
-                  d="M 20,24 Q 80,17 140,24"
-                  fill="none"
-                  stroke="url(#sheenGrad1)"
-                  strokeWidth="0.8"
-                  strokeLinecap="round"
-                />
-                {/* Subtle HUD Latitude Arc */}
-                <path
-                  d="M 20,48 Q 80,41 140,48"
-                  fill="none"
-                  stroke="rgba(255,255,255,0.06)"
-                  strokeWidth="0.7"
-                  strokeDasharray="3 3"
-                />
-              </svg>
-
-              <div className={`${styles.cardIconBox} ${styles.cardIconBoxLeft} ${styles.iconBoxCyan}`}>
-                <BookOpen size={20} className={styles.cyanIconSvg} />
-              </div>
-              <div className={`${styles.cardTextCol} ${styles.cardTextColLeft}`}>
-                <span className={`${styles.cardWord} ${styles.curvedWordLine1}`}>Learn</span>
-                <span className={`${styles.cardWord} ${styles.curvedWordLine2}`}>Concepts</span>
-              </div>
-              <div className={styles.cardShine}></div>
-            </div>
-
-            {/* Box 2: Practice & Solve (Mid-Left) */}
-            <div
-              className={`${styles.glassCard} ${styles.cardPracticeSolve} ${
-                activeCard === 'practice' ? styles.activeCard : ''
-              }`}
-              onClick={() => setActiveCard(activeCard === 'practice' ? null : 'practice')}
-            >
-              {/* Premium Visor Curved Plate SVG */}
-              <svg className={styles.curvedPlateSvg} viewBox="0 0 160 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <linearGradient id="glassBg2" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#0f2234" stopOpacity="0.88" />
-                    <stop offset="50%" stopColor="#071522" stopOpacity="0.80" />
-                    <stop offset="100%" stopColor="#02060c" stopOpacity="0.94" />
-                  </linearGradient>
-                  <linearGradient id="glassStroke2" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.36" />
-                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.16" />
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.06" />
-                  </linearGradient>
-                  <linearGradient id="rimGleam2" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.05" />
-                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.85" />
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.10" />
-                  </linearGradient>
-                  <linearGradient id="sheenGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.0" />
-                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.22" />
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.0" />
-                  </linearGradient>
-                </defs>
-                {/* Premium Curved Visor Panel */}
-                <path
-                  d="M 16,12 Q 80,5 144,12 Q 156,13 156,24 L 156,106 Q 156,118 144,119 Q 80,112 16,119 Q 4,118 4,106 L 4,24 Q 4,13 16,12 Z"
-                  fill="url(#glassBg2)"
-                  stroke="url(#glassStroke2)"
-                  strokeWidth="1.0"
-                  className={styles.curvedPlatePath}
-                />
-                {/* Specular Hairline Top Rim */}
-                <path
-                  d="M 16,12 Q 80,5 144,12"
-                  fill="none"
-                  stroke="url(#rimGleam2)"
-                  strokeWidth="0.9"
-                  strokeLinecap="round"
-                />
-                {/* Subtle Interior Glass Sheen Arc */}
-                <path
-                  d="M 20,24 Q 80,17 140,24"
-                  fill="none"
-                  stroke="url(#sheenGrad2)"
-                  strokeWidth="0.8"
-                  strokeLinecap="round"
-                />
-                {/* Subtle HUD Latitude Arc */}
-                <path
-                  d="M 20,48 Q 80,41 140,48"
-                  fill="none"
-                  stroke="rgba(255,255,255,0.06)"
-                  strokeWidth="0.7"
-                  strokeDasharray="3 3"
-                />
-              </svg>
-
-              <div className={`${styles.cardIconBox} ${styles.cardIconBoxLeft} ${styles.iconBoxElectricCyan}`}>
-                <Lightbulb size={20} className={styles.cyanIconSvg} />
-              </div>
-              <div className={`${styles.cardTextCol} ${styles.cardTextColLeft}`}>
-                <span className={`${styles.cardWord} ${styles.curvedWordLine1}`}>Practice</span>
-                <span className={`${styles.cardWord} ${styles.curvedWordLine2}`}>& Solve</span>
-              </div>
-              <div className={styles.cardShine}></div>
-            </div>
-
-            {/* Box 3: Achieve Your Goals (Bottom-Left) */}
-            <div
-              className={`${styles.glassCard} ${styles.cardAchieveGoals} ${
-                activeCard === 'goals' ? styles.activeCard : ''
-              }`}
-              onClick={() => setActiveCard(activeCard === 'goals' ? null : 'goals')}
-            >
-              {/* Premium Visor Curved Plate SVG */}
-              <svg className={styles.curvedPlateSvg} viewBox="0 0 160 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <linearGradient id="glassBg3" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#1e1334" stopOpacity="0.88" />
-                    <stop offset="50%" stopColor="#120922" stopOpacity="0.80" />
-                    <stop offset="100%" stopColor="#05020c" stopOpacity="0.94" />
-                  </linearGradient>
-                  <linearGradient id="glassStroke3" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.36" />
-                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.16" />
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.06" />
-                  </linearGradient>
-                  <linearGradient id="rimGleam3" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.05" />
-                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.85" />
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.10" />
-                  </linearGradient>
-                  <linearGradient id="sheenGrad3" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.0" />
-                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.22" />
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.0" />
-                  </linearGradient>
-                </defs>
-                {/* Premium Curved Visor Panel */}
-                <path
-                  d="M 16,12 Q 80,5 144,12 Q 156,13 156,24 L 156,106 Q 156,118 144,119 Q 80,112 16,119 Q 4,118 4,106 L 4,24 Q 4,13 16,12 Z"
-                  fill="url(#glassBg3)"
-                  stroke="url(#glassStroke3)"
-                  strokeWidth="1.0"
-                  className={styles.curvedPlatePath}
-                />
-                {/* Specular Hairline Top Rim */}
-                <path
-                  d="M 16,12 Q 80,5 144,12"
-                  fill="none"
-                  stroke="url(#rimGleam3)"
-                  strokeWidth="0.9"
-                  strokeLinecap="round"
-                />
-                {/* Subtle Interior Glass Sheen Arc */}
-                <path
-                  d="M 20,24 Q 80,17 140,24"
-                  fill="none"
-                  stroke="url(#sheenGrad3)"
-                  strokeWidth="0.8"
-                  strokeLinecap="round"
-                />
-                {/* Subtle HUD Latitude Arc */}
-                <path
-                  d="M 20,48 Q 80,41 140,48"
-                  fill="none"
-                  stroke="rgba(255,255,255,0.06)"
-                  strokeWidth="0.7"
-                  strokeDasharray="3 3"
-                />
-              </svg>
-
-              <div className={`${styles.cardIconBox} ${styles.cardIconBoxLeft} ${styles.iconBoxPurple}`}>
-                <Target size={20} className={styles.purpleIconSvg} />
-              </div>
-              <div className={`${styles.cardTextCol} ${styles.cardTextColLeft}`}>
-                <span className={`${styles.cardWord} ${styles.curvedWordLine1}`}>Achieve</span>
-                <span className={`${styles.cardWord} ${styles.curvedWordLine2}`}>Your Goals</span>
-              </div>
-              <div className={styles.cardShine}></div>
-            </div>
-
-            {/* Box 4: Track Progress (Mid-Right) */}
-            <div
-              className={`${styles.glassCard} ${styles.cardTrackProgress} ${
-                activeCard === 'progress' ? styles.activeCard : ''
-              }`}
-              onClick={() => setActiveCard(activeCard === 'progress' ? null : 'progress')}
-            >
-              {/* Premium Visor Curved Plate SVG - Mirrored */}
-              <svg className={styles.curvedPlateSvg} viewBox="0 0 160 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <linearGradient id="glassBg4" x1="100%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#1c1538" stopOpacity="0.88" />
-                    <stop offset="50%" stopColor="#100a24" stopOpacity="0.80" />
-                    <stop offset="100%" stopColor="#04020a" stopOpacity="0.94" />
-                  </linearGradient>
-                  <linearGradient id="glassStroke4" x1="100%" y1="0%" x2="0%" y2="0%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.36" />
-                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.16" />
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.06" />
-                  </linearGradient>
-                  <linearGradient id="rimGleam4" x1="100%" y1="0%" x2="0%" y2="0%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.05" />
-                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.85" />
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.10" />
-                  </linearGradient>
-                  <linearGradient id="sheenGrad4" x1="100%" y1="0%" x2="0%" y2="0%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.0" />
-                    <stop offset="50%" stopColor="#ffffff" stopOpacity="0.22" />
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.0" />
-                  </linearGradient>
-                </defs>
-                {/* Premium Curved Visor Panel */}
-                <path
-                  d="M 16,12 Q 80,5 144,12 Q 156,13 156,24 L 156,106 Q 156,118 144,119 Q 80,112 16,119 Q 4,118 4,106 L 4,24 Q 4,13 16,12 Z"
-                  fill="url(#glassBg4)"
-                  stroke="url(#glassStroke4)"
-                  strokeWidth="1.0"
-                  className={styles.curvedPlatePath}
-                />
-                {/* Specular Hairline Top Rim */}
-                <path
-                  d="M 16,12 Q 80,5 144,12"
-                  fill="none"
-                  stroke="url(#rimGleam4)"
-                  strokeWidth="0.9"
-                  strokeLinecap="round"
-                />
-                {/* Subtle Interior Glass Sheen Arc */}
-                <path
-                  d="M 20,24 Q 80,17 140,24"
-                  fill="none"
-                  stroke="url(#sheenGrad4)"
-                  strokeWidth="0.8"
-                  strokeLinecap="round"
-                />
-                {/* Subtle HUD Latitude Arc */}
-                <path
-                  d="M 20,48 Q 80,41 140,48"
-                  fill="none"
-                  stroke="rgba(255,255,255,0.06)"
-                  strokeWidth="0.7"
-                  strokeDasharray="3 3"
-                />
-              </svg>
-
-              <div className={`${styles.cardIconBox} ${styles.cardIconBoxRight} ${styles.iconBoxIndigo}`}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="3" y="14" width="4.5" height="7" rx="1.5" fill="url(#barG1)" />
-                  <rect x="9.75" y="9" width="4.5" height="12" rx="1.5" fill="url(#barG2)" />
-                  <rect x="16.5" y="4" width="4.5" height="17" rx="1.5" fill="url(#barG3)" />
-                  <defs>
-                    <linearGradient id="barG1" x1="0" y1="0" x2="0" y2="1">
-                      <stop stopColor="#38bdf8" />
-                      <stop offset="1" stopColor="#6366f1" />
-                    </linearGradient>
-                    <linearGradient id="barG2" x1="0" y1="0" x2="0" y2="1">
-                      <stop stopColor="#818cf8" />
-                      <stop offset="1" stopColor="#a855f7" />
-                    </linearGradient>
-                    <linearGradient id="barG3" x1="0" y1="0" x2="0" y2="1">
-                      <stop stopColor="#c084fc" />
-                      <stop offset="1" stopColor="#ec4899" />
-                    </linearGradient>
-                  </defs>
+              {!revealUnlocked ? (
+                <div className={styles.eqMini} title="Speaking dialogue...">
+                  <span className={styles.eqMiniBar}></span>
+                  <span className={styles.eqMiniBar}></span>
+                  <span className={styles.eqMiniBar}></span>
+                </div>
+              ) : (
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={styles.idleHintIcon}>
+                  <path d="M12 0L14.4 9.6L24 12L14.4 14.4L12 24L9.6 14.4L0 12L9.6 9.6L12 0Z" fill="currentColor"/>
                 </svg>
-              </div>
-              <div className={`${styles.cardTextCol} ${styles.cardTextColRight}`}>
-                <span className={`${styles.cardWord} ${styles.curvedWordLine1Right}`}>Track</span>
-                <span className={`${styles.cardWord} ${styles.curvedWordLine2Right}`}>Progress</span>
-              </div>
-              <div className={styles.cardShine}></div>
+              )}
+              <span className={styles.hintQuoteText}>
+                &ldquo;Curious who’s behind my smile? Hover to reveal!&rdquo;
+              </span>
+              {!revealUnlocked ? (
+                <span className={styles.speakingTimer}>
+                  speaking ({Math.max(1, Math.ceil(3.65 - dialogueSec))}s)
+                </span>
+              ) : (
+                <span className={styles.audioReplayBtn}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                  Hear voice
+                </span>
+              )}
             </div>
           </div>
         </div>

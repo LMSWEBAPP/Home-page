@@ -47,8 +47,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${outfit.variable} ${spaceGrotesk.variable} ${cinzel.variable}`}>
-      <body>{children}</body>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${outfit.variable} ${spaceGrotesk.variable} ${cinzel.variable}`}
+    >
+      <body suppressHydrationWarning>{children}</body>
     </html>
   );
 }

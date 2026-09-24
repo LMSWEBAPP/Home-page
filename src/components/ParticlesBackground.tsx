@@ -3,7 +3,17 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-interface ParticlesBackgroundProps {
+export interface ParticleTransformProps {
+  posX?: number;
+  posY?: number;
+  posZ?: number;
+  scale?: number;
+  rotX?: number;
+  rotY?: number;
+  rotZ?: number;
+}
+
+interface ParticlesBackgroundProps extends ParticleTransformProps {
   count?: number;
   opacity?: number;
   className?: string;
@@ -17,6 +27,7 @@ export class ParticlesSwarm {
   scene: THREE.Scene;
   camera: THREE.PerspectiveCamera;
   renderer: THREE.WebGLRenderer;
+  swarmGroup: THREE.Group;
   dummy: THREE.Object3D;
   color: THREE.Color;
   target: THREE.Vector3;
@@ -24,11 +35,18 @@ export class ParticlesSwarm {
   material: THREE.MeshBasicMaterial;
   mesh: THREE.InstancedMesh;
   positions: THREE.Vector3[];
+  particlePhases: Float32Array;
+  particleScales: Float32Array;
+  isDiscoDust: Uint8Array;
   clock: THREE.Clock;
   animationFrameId: number | null = null;
   onResizeBound: () => void;
 
-  constructor(canvas: HTMLCanvasElement, count = 7500) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    count = 13000,
+    initialTransform?: ParticleTransformProps
+  ) {
     this.count = count;
     this.canvas = canvas;
     this.speedMult = 0.85;
@@ -36,7 +54,7 @@ export class ParticlesSwarm {
     const width = canvas.clientWidth || canvas.parentElement?.clientWidth || window.innerWidth;
     const height = canvas.clientHeight || canvas.parentElement?.clientHeight || window.innerHeight;
 
-    // SCENE & CAMERA (No fog to guarantee 100% transparent background)
+    // SCENE & CAMERA (100% transparent background)
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 2000);
     this.camera.position.set(0, 0, 110);
@@ -50,14 +68,18 @@ export class ParticlesSwarm {
     });
     this.renderer.setSize(width, height, false);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    this.renderer.setClearColor(0x000000, 0); // 100% transparent clear color
+    this.renderer.setClearColor(0x000000, 0);
 
-    // PARTICLES with Additive Blending for brilliant radiant glow without black box
+    // Container Group for 60fps real-time positioning, scaling, and rotating
+    this.swarmGroup = new THREE.Group();
+    this.scene.add(this.swarmGroup);
+
     this.dummy = new THREE.Object3D();
     this.color = new THREE.Color();
     this.target = new THREE.Vector3();
 
-    this.geometry = new THREE.TetrahedronGeometry(0.32);
+    // Sharp tetrahedron geometry for crystalline quantum and disco stardust
+    this.geometry = new THREE.TetrahedronGeometry(0.30);
     this.material = new THREE.MeshBasicMaterial({
       color: 0xffffff,
       transparent: true,
@@ -67,9 +89,13 @@ export class ParticlesSwarm {
 
     this.mesh = new THREE.InstancedMesh(this.geometry, this.material, this.count);
     this.mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-    this.scene.add(this.mesh);
+    this.swarmGroup.add(this.mesh);
 
     this.positions = [];
+    this.particlePhases = new Float32Array(this.count);
+    this.particleScales = new Float32Array(this.count);
+    this.isDiscoDust = new Uint8Array(this.count);
+
     for (let i = 0; i < this.count; i++) {
       this.positions.push(
         new THREE.Vector3(
@@ -78,8 +104,32 @@ export class ParticlesSwarm {
           (Math.random() - 0.5) * 100
         )
       );
-      this.mesh.setColorAt(i, this.color.setHex(0x38bdf8));
+
+      this.particlePhases[i] = Math.random() * Math.PI * 2;
+
+      // Designate ~28% as Sparkling Golden Disco Dust
+      const isDisco = i % 7 === 0 || i % 7 === 3 || i >= 10500;
+      this.isDiscoDust[i] = isDisco ? 1 : 0;
+
+      // Particle scale: disco dust sparkles slightly larger on flash
+      this.particleScales[i] = isDisco
+        ? 0.75 + Math.random() * 0.5
+        : 0.35 + Math.random() * 0.35;
+
+      this.mesh.setColorAt(i, this.color.setHex(isDisco ? 0xffd700 : 0x00c2ff));
     }
+
+    // Default transform: User's exact coordinates
+    const defaultTransform: ParticleTransformProps = {
+      posX: 6,
+      posY: 15,
+      posZ: -31,
+      scale: 1,
+      rotX: 115,
+      rotY: 5,
+      rotZ: -40,
+    };
+    this.updateTransform(initialTransform || defaultTransform);
 
     this.clock = new THREE.Clock();
     this.animate = this.animate.bind(this);
@@ -89,10 +139,25 @@ export class ParticlesSwarm {
     this.animate();
   }
 
+  updateTransform(t: ParticleTransformProps) {
+    if (!this.swarmGroup) return;
+    const px = t.posX ?? 6;
+    const py = t.posY ?? 15;
+    const pz = t.posZ ?? -31;
+    const s = t.scale ?? 1.0;
+    const rx = ((t.rotX ?? 115) * Math.PI) / 180;
+    const ry = ((t.rotY ?? 5) * Math.PI) / 180;
+    const rz = ((t.rotZ ?? -40) * Math.PI) / 180;
+
+    this.swarmGroup.position.set(px, py, pz);
+    this.swarmGroup.scale.set(s, s, s);
+    this.swarmGroup.rotation.set(rx, ry, rz);
+  }
+
   onResize() {
     if (!this.canvas) return;
-    const width = this.canvas.clientWidth || this.canvas.parentElement?.clientWidth || window.innerWidth;
-    const height = this.canvas.clientHeight || this.canvas.parentElement?.clientHeight || window.innerHeight;
+    const width = this.canvas.clientWidth || canvasParentWidth(this.canvas);
+    const height = this.canvas.clientHeight || canvasParentHeight(this.canvas);
     if (width === 0 || height === 0) return;
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
@@ -103,6 +168,7 @@ export class ParticlesSwarm {
     this.animationFrameId = requestAnimationFrame(this.animate);
     const time = this.clock.getElapsedTime() * this.speedMult;
 
+    // Mathematical simulation: expanded to 16 concentric lanes for heavy, dense rings
     const s = 50;
     const v = 0.8;
     const h = 1.0;
@@ -111,20 +177,26 @@ export class ParticlesSwarm {
 
     const n = Math.max(1, this.count);
     const tau = 6.283185307179586;
-    const rows = Math.max(1, Math.ceil(n / 10));
+    const TOTAL_LANES = 16;
+    const rows = Math.max(1, Math.ceil(n / TOTAL_LANES));
     const t = time * v;
     const dt = time * (0.8 + d);
-    const tube = s * (0.05 + 0.02 * h);
-    const dr = s * (0.18 + 0.03 * r);
 
     for (let i = 0; i < this.count; i++) {
       const target = this.target;
       const color = this.color;
+      const phase = this.particlePhases[i];
+      const isDisco = this.isDiscoDust[i] === 1;
 
-      const lane = i % 10;
-      const row = (i - lane) / 10;
+      const lane = i % TOTAL_LANES;
+      const row = (i - lane) / TOTAL_LANES;
 
-      const dataMask = Math.min(1, Math.floor(lane / 8));
+      // Heavy multi-shell concentric rings
+      const shell = lane % 3;
+      const tube = s * (0.045 + 0.02 * h) * (0.88 + shell * 0.32);
+      const dr = s * (0.17 + 0.03 * r) * (0.85 + shell * 0.28);
+
+      const dataMask = Math.min(1, Math.floor(lane / 12));
       const energyMask = 1.0 - dataMask;
 
       const u0 = (row + 0.5) / rows + t * 0.04;
@@ -143,7 +215,7 @@ export class ParticlesSwarm {
       const cy = s * (0.42 * top - 0.28 * bottom + 0.03 * s2);
       const cz = s * 0.72 * sa;
 
-      const lu = (lane + 0.5) / 10.0;
+      const lu = (lane + 0.5) / TOTAL_LANES;
 
       const spin = lu * tau * 2.0 + a * (1.4 + r * 0.5) - t * (1.2 + h * 0.15);
 
@@ -165,29 +237,68 @@ export class ParticlesSwarm {
       const dy = cy + s * 0.16 + dr * 0.35 * dn;
       const dz = cz + sa * dr + sa * tube * 0.5 * dc;
 
-      const x = ex * energyMask + dx * dataMask;
-      const y = ey * energyMask + dy * dataMask;
-      const z = ez * energyMask + dz * dataMask;
+      // Micro-flutter for golden disco dust floating around the heavy rings
+      let discoScatterX = 0;
+      let discoScatterY = 0;
+      let discoScatterZ = 0;
+      if (isDisco) {
+        discoScatterX = Math.sin(phase + time * 1.4) * 2.5;
+        discoScatterY = Math.cos(phase * 1.3 + time * 1.1) * 2.5;
+        discoScatterZ = Math.sin(phase * 0.8 + time * 1.8) * 3.0;
+      }
 
-      // Vertical spiral: Orient the loop vertically along the Y-axis to frame the mascot
-      const vertX = -y * 1.35 + 4.5;
-      const vertY = x;
-      const vertZ = z;
+      const x = ex * energyMask + dx * dataMask + discoScatterX;
+      const y = ey * energyMask + dy * dataMask + discoScatterY;
+      const z = ez * energyMask + dz * dataMask + discoScatterZ;
 
-      target.set(vertX, vertY, vertZ);
+      target.set(x, y, z);
 
       const pulse = 0.5 + 0.5 * Math.sin(a * 3.0 - t * 1.8);
 
-      const heatZone = 0.5 - 0.5 * ca;
-      const powerZone = 0.5 + 0.5 * sa;
+      let hue: number;
+      let sat: number;
+      let light: number;
 
-      // Vedika signature palette: Electric Cyan + Amethyst Purple / Violet + Golden Sparkles
-      const energyHue = 0.73 + 0.08 * heatZone + 0.04 * powerZone; // Violet & Purple
-      const dataHue = 0.54 + 0.04 * (0.5 + 0.5 * dn); // Electric Sky / Cyan
+      if (isDisco) {
+        // =========================================================
+        // GOLDEN DISCO DUST EFFECT
+        // Glittering 24K gold, champagne flashes & radiant diamond peaks
+        // =========================================================
+        const discoTwinkle = Math.sin(time * 7.5 + phase * 2.5);
+        const sparkle = Math.pow(Math.max(0, discoTwinkle), 4.5); // Sharp glitter burst
 
-      const hue = energyHue * energyMask + dataHue * dataMask;
-      const sat = energyMask * (0.85 + 0.15 * pulse) + dataMask * 0.95;
-      const light = energyMask * (0.42 + 0.28 * pulse) + dataMask * (0.55 + 0.2 * (0.5 + 0.5 * dn));
+        // Rich Warm Gold Hue (42° - 48°)
+        hue = 0.118 + 0.015 * Math.sin(phase + time);
+        sat = 0.98;
+        // Lightness flashes up to 0.94 during sparkle
+        light = 0.52 + 0.42 * sparkle;
+      } else {
+        // =========================================================
+        // 4 LAB THEME COLORS
+        // 0: Math Lab (Vibrant Purple #A855F7)
+        // 1: Physics Lab (Electric Cyan/Blue #00C2FF)
+        // 2: Chemistry Lab (Neon Emerald Green #00F298)
+        // 3: Biology Lab (Warm Golden Amber #FF9900)
+        // =========================================================
+        const labCategory = lane % 4;
+
+        if (labCategory === 0) {
+          // Math Lab - Neon Purple
+          hue = 0.77 + 0.04 * (0.5 + 0.5 * Math.sin(a * 2.0 + t));
+        } else if (labCategory === 1) {
+          // Physics Lab - Electric Blue / Sky Cyan
+          hue = 0.54 + 0.03 * (0.5 + 0.5 * dn);
+        } else if (labCategory === 2) {
+          // Chemistry Lab - Neon Emerald Green
+          hue = 0.42 + 0.03 * (0.5 + 0.5 * ca);
+        } else {
+          // Biology Lab - Warm Golden Amber / Orange
+          hue = 0.10 + 0.03 * (0.5 + 0.5 * sa);
+        }
+
+        sat = energyMask * (0.94 + 0.06 * pulse) + dataMask * 0.98;
+        light = energyMask * (0.42 + 0.28 * pulse) + dataMask * (0.55 + 0.22 * (0.5 + 0.5 * dn));
+      }
 
       color.setHSL(
         Math.max(0, Math.min(1, hue % 1)),
@@ -195,13 +306,24 @@ export class ParticlesSwarm {
         Math.max(0, Math.min(1, light))
       );
 
-      // UPDATE
-      this.positions[i].lerp(this.target, 0.1);
+      // UPDATE POSITION & SCALE
+      this.positions[i].lerp(this.target, 0.12);
       this.dummy.position.copy(this.positions[i]);
+
+      // Dynamic scale expansion when disco dust glitters
+      let currentScale = this.particleScales[i];
+      if (isDisco) {
+        const discoTwinkle = Math.sin(time * 7.5 + phase * 2.5);
+        const sparkle = Math.pow(Math.max(0, discoTwinkle), 4.5);
+        currentScale *= 0.85 + 0.95 * sparkle;
+      }
+      this.dummy.scale.set(currentScale, currentScale, currentScale);
+
       this.dummy.updateMatrix();
       this.mesh.setMatrixAt(i, this.dummy.matrix);
       this.mesh.setColorAt(i, this.color);
     }
+
     this.mesh.instanceMatrix.needsUpdate = true;
     if (this.mesh.instanceColor) {
       this.mesh.instanceColor.needsUpdate = true;
@@ -216,31 +338,81 @@ export class ParticlesSwarm {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = null;
     }
-    window.removeEventListener('resize', this.onResizeBound);
-    this.geometry.dispose();
-    this.material.dispose();
-    this.scene.remove(this.mesh);
-    this.renderer.dispose();
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('resize', this.onResizeBound);
+    }
+    try {
+      this.geometry?.dispose();
+      this.material?.dispose();
+      if (this.mesh && this.swarmGroup) {
+        this.swarmGroup.remove(this.mesh);
+      }
+      this.renderer?.dispose();
+    } catch {
+      // Safe cleanup without throwing on unmount
+    }
   }
 }
 
+function canvasParentWidth(canvas: HTMLCanvasElement): number {
+  return canvas.parentElement?.clientWidth || window.innerWidth;
+}
+
+function canvasParentHeight(canvas: HTMLCanvasElement): number {
+  return canvas.parentElement?.clientHeight || window.innerHeight;
+}
+
 export default function ParticlesBackground({
-  count = 7500,
-  opacity = 0.85,
+  count = 13000,
+  opacity = 0.92,
+  posX = 6,
+  posY = 15,
+  posZ = -31,
+  scale = 1.0,
+  rotX = 115,
+  rotY = 5,
+  rotZ = -40,
   className,
   style,
 }: ParticlesBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const swarmRef = useRef<ParticlesSwarm | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const swarm = new ParticlesSwarm(canvas, count);
+
+    const swarm = new ParticlesSwarm(canvas, count, {
+      posX,
+      posY,
+      posZ,
+      scale,
+      rotX,
+      rotY,
+      rotZ,
+    });
+    swarmRef.current = swarm;
 
     return () => {
       swarm.dispose();
+      swarmRef.current = null;
     };
   }, [count]);
+
+  // Update transform dynamically in real-time without re-creating Three.js instance
+  useEffect(() => {
+    if (swarmRef.current) {
+      swarmRef.current.updateTransform({
+        posX,
+        posY,
+        posZ,
+        scale,
+        rotX,
+        rotY,
+        rotZ,
+      });
+    }
+  }, [posX, posY, posZ, scale, rotX, rotY, rotZ]);
 
   return (
     <canvas
